@@ -1,8 +1,9 @@
 .customLinksMenu {
   flex-grow: 1;
   display: flex;
-  justify-content: right;
+  justify-content: center;
   height: 100%;
+  padding-left: 5%;
 }
 .createListingLinkOnly {
   display: flex;

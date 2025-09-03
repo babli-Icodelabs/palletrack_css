@@ -133,7 +133,7 @@
   /* ================ Topbar related ================ */
 
   --topbarHeight: 60px;
-  --topbarHeightDesktop: 72px;
+  --topbarHeightDesktop: 94px;
 
   --TopbarMobileMenu_topMargin: 96px;
 
@@ -445,7 +445,7 @@ label {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 4px;
-    padding-bottom: 12px;
+    padding-bottom: 8px;
   }
 }
 
@@ -486,9 +486,9 @@ select {
   appearance: none;
 
   /* Background */
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232D4053' stroke='%232D4053' stroke-width='.5' fill-rule='evenodd'%3E%3Cpath d='M4.687 15.315a.443.443 0 0 0 .626 0l3.557-3.556a.446.446 0 0 0-.629-.629L5 14.37l-3.241-3.24a.445.445 0 0 0-.629.63l3.557 3.553v.002ZM5.313 1.13a.443.443 0 0 0-.626 0L1.13 4.685a.446.446 0 0 0 .629.63L5 2.074l3.241 3.24a.445.445 0 0 0 .629-.629L5.313 1.131V1.13Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.68579 4.96726C4.86 5.14058 5.14 5.14058 5.31421 4.96726L8.86967 1.4118C9.04344 1.23758 9.04344 0.956702 8.86967 0.783373C8.6959 0.609156 8.41457 0.609156 8.24124 0.783373L5 4.02417L1.75876 0.783373C1.58498 0.609156 1.30366 0.609156 1.13033 0.783373C0.956557 0.956702 0.956557 1.23758 1.13033 1.4118L4.68579 4.96726Z' fill='%234A4A4A' stroke='%234A4A4A'/%3E%3C/svg%3E%0A");
   background-position: center right 12px;
-  background-size: 8px 14px;
+  background-size: 8px 5px;
 
   &::placeholder {
     color: var(--colorGrey300);
@@ -498,7 +498,7 @@ select {
     padding: 7px 32px 7px 16px;
     line-height: 32px;
     background-position: center right 16px;
-    background-size: 10px 16px;
+    background-size: 8px 5px;
   }
 }
 /* Effects */
@@ -1548,6 +1548,6 @@ textarea {
   margin-top: 24px;
 
   @media (--viewportMedium) {
-    margin-top: 32px;
+    margin-top: 24px;
   }
 }

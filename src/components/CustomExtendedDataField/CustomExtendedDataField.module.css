@@ -8,7 +8,7 @@
   }
 
   @media (--viewportMedium) {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 
     &:last-child {
       margin-bottom: 0;
