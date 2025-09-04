@@ -19,9 +19,20 @@ import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
 
 import css from './TopbarDesktop.module.css';
 
+const CreateLisingLink = () => {
+  return (
+    <NamedLink name="NewListingPage" className={classNames(css.topbarLink, css.newListingLink)}>
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.createListing" />
+      </span>
+    </NamedLink>
+  );
+};
+
+
 const SignupLink = () => {
   return (
-    <NamedLink name="SignupPage" className={css.topbarLink}>
+    <NamedLink name="SignupPage" className={classNames(css.topbarLink, css.signupLink)}>
       <span className={css.topbarLinkLabel}>
         <FormattedMessage id="TopbarDesktop.signup" />
       </span>
@@ -103,6 +114,42 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
     </Menu>
   );
 };
+const NotLoggedInMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink }) => {
+  const currentPageClass = page => {
+    const isAccountSettingsPage =
+      page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
+    return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
+  };
+
+  return (
+    <Menu className={css.notLoggedInProfile}>
+      <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
+        <svg width="41" height="25" viewBox="0 0 41 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.38379 22.465H38.3838M2.38379 12.465H38.3838M2.38379 2.46497H38.3838" stroke="#232322" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+      </MenuLabel>
+      <MenuContent className={css.profileMenuContent}>
+      
+          <MenuItem key="NewListingPage">
+            <NamedLink
+              className={classNames(css.menuLink, currentPageClass('NewListingPage'))}
+              name="NewListingPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.yourListingsLink" />
+            </NamedLink>
+          </MenuItem>
+          <MenuItem key="About Page">
+          <br/>
+          </MenuItem>
+  
+  
+      </MenuContent>
+    </Menu>
+  );
+};
+
 
 /**
  * Topbar for desktop layout
@@ -167,10 +214,11 @@ const TopbarDesktop = props => {
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
     />
-  ) : null;
+  ) : <NotLoggedInMenu />;
 
   const signupLinkMaybe = isAuthenticatedOrJustHydrated ? null : <SignupLink />;
   const loginLinkMaybe = isAuthenticatedOrJustHydrated ? null : <LoginLink />;
+  const createLisingLinkMaybe = <CreateLisingLink />;
 
   const searchFormMaybe = showSearchForm ? (
     <TopbarSearchForm
@@ -181,11 +229,19 @@ const TopbarDesktop = props => {
       appConfig={config}
     />
   ) : (
-    <div
-      className={classNames(css.spacer, css.topbarSearchWithLeftPadding, {
-        [css.takeAvailableSpace]: giveSpaceForSearch,
-      })}
-    />
+    <
+      // className={classNames(css.spacer, css.topbarSearchWithLeftPadding, {
+      //   [css.takeAvailableSpace]: giveSpaceForSearch,
+      // })}
+      >
+      <CustomLinksMenu
+        currentPage={currentPage}
+        customLinks={customLinks}
+        intl={intl}
+        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
+        showCreateListingsLink={showCreateListingsLink}
+      />
+    </>
   );
 
   return (
@@ -198,18 +254,13 @@ const TopbarDesktop = props => {
       />
       {searchFormMaybe}
 
-      <CustomLinksMenu
-        currentPage={currentPage}
-        customLinks={customLinks}
-        intl={intl}
-        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
-        showCreateListingsLink={showCreateListingsLink}
-      />
+
 
       {inboxLinkMaybe}
-      {profileMenuMaybe}
+      {createLisingLinkMaybe}
       {signupLinkMaybe}
-      {loginLinkMaybe}
+      {profileMenuMaybe}
+      {/* {loginLinkMaybe} */}
     </nav>
   );
 };

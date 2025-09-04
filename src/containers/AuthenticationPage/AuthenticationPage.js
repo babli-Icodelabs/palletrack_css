@@ -268,6 +268,9 @@ export const AuthenticationForms = props => {
 
   return (
     <div className={css.content}>
+    {!isLogin && <div className={css.progressWrapper}>
+      <div className={css.progress} style={{width:"30%"}}/>
+      </div>}
       <LinkTabNavHorizontal className={css.tabs} tabs={tabs} ariaLabel={ariaLabel} />
       {loginOrSignupError}
 
@@ -647,7 +650,7 @@ export const AuthenticationPageComponent = props => {
     >
       <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer className={topbarClasses} />}
+        topbar={<TopbarContainer className={classNames(topbarClasses,css.authTopbar)} />}
         footer={<FooterContainer />}
       >
         <ResponsiveBackgroundImageContainer

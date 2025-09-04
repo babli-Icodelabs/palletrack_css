@@ -19,7 +19,7 @@
   margin-top: 24px;
 
   @media (--viewportMedium) {
-    margin-top: 32px;
+    margin-top: 24px;
   }
 }
 
@@ -28,16 +28,16 @@
   margin-top: 24px;
 
   @media (--viewportMedium) {
-    margin-top: 32px;
+    margin-top: 24px;
   }
 }
 
 .firstNameRoot {
-  width: calc(34% - 9px);
+  width: calc(50% - 9px);
 }
 
 .lastNameRoot {
-  width: calc(66% - 9px);
+  width: calc(50% - 9px);
 }
 
 .password {
@@ -46,4 +46,24 @@
 
 .bottomWrapper {
   composes: marketplaceModalBottomWrapper from global;
+  margin-top: 40px;
+  & svg{
+    stroke: #fff;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px 0px #00000040 inset;
+    border: 1px solid #fff;
+    top: 1px;
+    & rect {
+      fill: #F06F2A14;
+    }
+
+  }
+  & > div{
+    margin-top: 0;
+    margin-bottom: 40px;
+    padding-bottom: 0;
+  }
+  & li{
+    padding: 0;
+  }
 }
