@@ -20,6 +20,7 @@ const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
 const { authenticateFacebook, authenticateFacebookCallback } = require('./api/auth/facebook');
 const { authenticateGoogle, authenticateGoogleCallback } = require('./api/auth/google');
+const algoliaController = require('./api/controller/algoliaController');
 
 const router = express.Router();
 
@@ -79,5 +80,14 @@ router.get('/auth/google', authenticateGoogle);
 // with Google. In this route a Passport.js custom callback is used for calling
 // loginWithIdp endpoint in Sharetribe Auth API to authenticate user to the marketplace
 router.get('/auth/google/callback', authenticateGoogleCallback);
+
+// CRUD + search endpoints for Algolia
+router.post('/algolia/save', algoliaController.saveObjects);        // Create/Update
+router.get('/algolia/:objectID', algoliaController.getObject);      // Read
+router.patch('/algolia/:objectID', algoliaController.partialUpdate);// Partial Update
+router.delete('/algolia/:objectID', algoliaController.deleteObject);// Delete one
+router.post('/algolia/search', algoliaController.search);           // Search
+router.post('/algolia/deleteBy', algoliaController.deleteBy);       // Delete by filter
+router.post('/algolia/clear', algoliaController.clearIndex);        // Clear entire index
 
 module.exports = router;
