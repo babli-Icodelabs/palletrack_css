@@ -57,6 +57,7 @@ export const LogoComponent = props => {
   if (isImageAsset(logoImageDesktop) && hasValidLogoSettings && layout === 'desktop') {
     const variants = logoImageDesktop.attributes.variants;
     const variantNames = getVariantNames(variants);
+    console.log(variants)
     const { width } = getVariantData(variants);
     return (
       <div className={logoClasses} style={{ width: `${width}px` }}>
@@ -64,7 +65,7 @@ export const LogoComponent = props => {
           rootClassName={logoImageClasses}
           alt={marketplaceName}
           image={logoImageDesktop}
-          variants={variantNames}
+          variants={["scaled2x"]}
           sizes={`${width}px`}
           width={width}
           height={logoSettings?.height}

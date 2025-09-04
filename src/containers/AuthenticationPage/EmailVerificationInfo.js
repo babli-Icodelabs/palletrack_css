@@ -29,7 +29,8 @@ const EmailVerificationInfo = props => {
 
   return (
     <div className={css.content}>
-      <NamedLink className={css.verifyClose} name="ProfileSettingsPage">
+    <div className={css.emailVerifyContent}>
+    <NamedLink className={css.verifyClose} name="ProfileSettingsPage">
         <span className={css.closeText}>
           <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
         </span>
@@ -56,6 +57,7 @@ const EmailVerificationInfo = props => {
           <FormattedMessage id="AuthenticationPage.fixEmail" values={{ fixEmailLink }} />
         </p>
       </div>
+    </div>
     </div>
   );
 };

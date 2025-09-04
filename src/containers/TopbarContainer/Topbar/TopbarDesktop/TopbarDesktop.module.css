@@ -28,7 +28,20 @@
 .logoLink {
   border-bottom: 0px solid;
   transition: var(--transitionStyleButton);
+
+  &>div {
+    height: 84px !important;
+    width: 115px !important;
+
+    & img {
+      max-height: 84px !important;
+      max-width: 115px !important;
+      height: 84px;
+      width: 115px;
+    }
+  }
 }
+
 .logoLink:hover {
   border-bottom: 4px solid var(--marketplaceColor);
   border-radius: 0;
@@ -113,12 +126,84 @@
   }
 }
 
+
+
 .topbarLinkLabel {
   composes: textSmall from global;
   display: inline-block;
-  margin: 28px 0;
+  margin: 39px 0;
   text-decoration: inherit;
   position: relative;
+}
+
+.signupLink {
+  background-color: #F06F2A;
+  margin: 27px 0;
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid #F06F2A;
+  &:hover{
+    border-radius: 6px;
+    border: 1px solid #F06F2A !important; 
+  }
+  & .topbarLinkLabel {
+    /* composes: textSmall from global; */
+    margin: 0px 0 !important;
+    text-decoration: inherit;
+    position: relative;
+    font-family: Inter;
+    font-weight: 600;
+    font-style: Semi Bold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 20px;
+    letter-spacing: 0px;
+    text-align: center;
+    color: #fff;
+
+  }
+
+}
+
+.notLoggedInProfile{
+  margin-left: 20px;
+}
+
+.newListingLink{
+  border: 1px solid #F06F2A;
+  margin: 27px 0;
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  margin-right: 24px;
+  &:hover{
+    border-radius: 6px;
+    border: 1px solid #F06F2A;
+  }
+  & .topbarLinkLabel {
+    /* composes: textSmall from global; */
+    margin: 0px 0 !important;
+    text-decoration: inherit;
+    position: relative;
+    font-family: Inter;
+    font-weight: 600;
+    font-style: Semi Bold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 20px;
+    letter-spacing: 0px;
+    text-align: center;
+    color: #F06F2A;
+
+  }
+
 }
 
 .notificationDot {
@@ -150,6 +235,7 @@
     transform: scale(0);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;

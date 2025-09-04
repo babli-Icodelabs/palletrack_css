@@ -24,6 +24,10 @@
     stroke: var(--colorSuccess);
   }
 
+  &:checked + label .uncheck {
+   display: none;
+  }
+
   /* disabled version */
   &:hover + label .boxDisabled,
   &:focus + label .boxDisabled,
@@ -36,6 +40,7 @@
     display: inline;
     stroke: var(--marketplaceColor);
     stroke-width: 1px;
+
   }
 
   /* Display the "check" when checked */
@@ -76,6 +81,7 @@
   display: inline-flex;
   align-items: center;
   cursor: pointer;
+  position: relative;
 
   @media (--viewportMedium) {
     height: 24px;
@@ -86,6 +92,12 @@
 .checked {
   display: none;
   fill: var(--marketplaceColor);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
 }
 .checkedSuccess {
   display: none;
@@ -100,7 +112,11 @@
 .boxDisabled,
 .boxSuccess,
 .box {
-  stroke: var(--colorGrey300);
+  stroke: #4A4A4A;
+}
+
+.uncheck{
+  stroke: #4A4A4A;
 }
 
 .text {
@@ -108,6 +124,13 @@
 .textRoot {
   composes: marketplaceListingAttributeFontStyles from global;
   color: var(--colorGrey700);
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 13px;
+  leading-trim: NONE;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  
   padding: 0;
   margin-top: -1px;
   margin-bottom: 1px;
