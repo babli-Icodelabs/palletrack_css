@@ -6,6 +6,9 @@ import BlockBuilder from '../../BlockBuilder';
 
 import SectionContainer from '../SectionContainer';
 import css from './SectionArticle.module.css';
+import FeatureOfTheWeek from '../../../../components/FeatureOfTheWeek/FeatureOfTheWeek';
+import FeaturedListings from '../../../../components/FeaturedListings/FeaturedListings';
+import { Button } from '../../../../components';
 
 /**
  * @typedef {Object} BlockConfig
@@ -67,6 +70,16 @@ const SectionArticle = props => {
 
   const hasHeaderFields = hasDataInFields([title, description, callToAction], fieldOptions);
   const hasBlocks = blocks?.length > 0;
+
+  if (sectionId === 'feature_of_the_week') {
+    return <FeatureOfTheWeek/>
+  }
+  if (sectionId === 'featured_listings') {
+    return <FeaturedListings/>
+  }
+  if (sectionId === 'let_us_help') {
+    return <div className={css.letUsHelp}><h1>In search of something specific? Let us help</h1> <Button>Contact us</Button></div>
+  }
 
   return (
     <SectionContainer
