@@ -160,14 +160,15 @@
         padding: 20px;
       }
       @media (max-width: 1023px) {
-        font-size: 34px;
-        line-height: 42px;
+        font-size: 24px;
+        line-height: 28px;
         padding: 16px;
       }
       @media (max-width: 767px) {
-        font-size: 30px;
-        line-height: 36px;
+        font-size: 20px;
+        line-height: 24px;
         padding: 12px;
+        margin: 0 0 20px;
       }
     }
     &:nth-child(2) {
@@ -182,6 +183,11 @@
         padding: 56px 0 72px;
       }
       & > div {
+        grid-template-columns: 248px 1fr 1fr;
+        @media (max-width: 767px) {
+          gap: 16px;
+          grid-template-columns: 1fr;
+        }
         & > div {
           &:nth-child(1) {
             background-color: #ffffff;
@@ -205,14 +211,15 @@
               @media (max-width: 1300px) {
                 font-size: 40px;
                 line-height: 48px;
+                margin: 0 0 40px;
               }
               @media (max-width: 1023px) {
-                font-size: 36px;
-                line-height: 44px;
+                font-size: 24px;
+                line-height: 28px;
               }
               @media (max-width: 767px) {
-                font-size: 32px;
-                line-height: 40px;
+                font-size: 20px;
+                line-height: 24px;
               }
             }
           }
