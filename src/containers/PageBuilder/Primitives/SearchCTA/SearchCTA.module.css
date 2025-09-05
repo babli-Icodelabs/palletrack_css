@@ -44,7 +44,7 @@
       width: 576px;
     }
     &.gridCol2 {
-      width: 768px;
+      width: 1076px;
     }
     &.gridCol3 {
       width: 960px;
@@ -77,7 +77,10 @@
     }
     &.gridCol4 {
       /* we force the last column to be a fixed width in order to force the form to take the max width it is allowed to take (see .searchBarContainer) */
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(239px, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(
+          239px,
+          1fr
+        ) auto;
     }
     & > *:not(:last-child):not(:nth-last-child(2)) {
       border-right: 1px solid var(--colorGrey200);
@@ -99,17 +102,41 @@
 }
 
 .submitButton {
+  min-height: 64px;
+  height: 64px;
   min-height: 40px;
   min-width: 86px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 18px 32px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  @media (--viewportMedium) {
-    height: 48px;
+
+  font-family: Inter;
+  font-weight: 600;
+  font-style: Semi Bold;
+  font-size: 24px;
+  leading-trim: NONE;
+  line-height: 28px;
+  letter-spacing: 0px;
+  text-align: center;
+  @media (max-width: 1300px) {
+    font-size: 22px;
+    line-height: 26px;
+  }
+  @media (max-width: 1023px) {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  @media (max-width: 767px) {
+    font-size: 18px;
+    line-height: 22px;
+    height: 54px;
   }
   @media (--viewportLarge) {
     max-width: 270px;
+  }
+  & svg {
+    fill: transparent;
+    margin-right: 10px;
   }
 }
