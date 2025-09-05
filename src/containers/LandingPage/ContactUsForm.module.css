@@ -1,0 +1,20 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.row {
+    display: flex;
+    gap: 16px;
+}
+
+.submitWrapper {
+    margin-top: 24px;
+}
