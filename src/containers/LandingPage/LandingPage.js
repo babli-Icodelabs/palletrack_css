@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { compose } from 'redux';
+import { useIntl } from 'react-intl';
 import { bool, object } from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -13,9 +14,7 @@ import FallbackPage from './FallbackPage';
 import { ASSET_NAME } from './LandingPage.duck';
 
 import { manageDisableScrolling } from '../../ducks/ui.duck';
-import ContactDetailsForm from '../ContactDetailsPage/ContactDetailsForm/ContactDetailsForm';
 import ContactUsForm from './ContactUsForm';
-import { useIntl } from 'react-intl';
 
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
