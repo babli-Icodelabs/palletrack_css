@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form as FinalForm } from 'react-final-form';
+import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
@@ -8,7 +8,7 @@ import { propTypes } from '../../../util/types';
 import * as validators from '../../../util/validators';
 import { getPropsForCustomUserFieldInputs } from '../../../util/userHelpers';
 
-import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '../../../components';
+import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField, FieldLocationAutocompleteInput, FieldSelect, ImageFromFile } from '../../../components';
 
 import FieldSelectUserType from '../FieldSelectUserType';
 import UserFieldDisplayName from '../UserFieldDisplayName';
@@ -16,9 +16,12 @@ import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
 import css from './SignupForm.module.css';
 
+const ACCEPT_IMAGES = 'image/*';
+const UPLOAD_CHANGE_DELAY = 2000; // S
+
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
-
+const identity = v => v;
 const SignupFormComponent = props => (
   <FinalForm
     {...props}
@@ -32,6 +35,11 @@ const SignupFormComponent = props => (
         handleSubmit,
         inProgress,
         invalid,
+        profileImage,
+        updateInProgress,
+        updateProfileError,
+        uploadImageError,
+        uploadInProgress,
         intl,
         termsAndConditions,
         preselectedUserType,
@@ -39,9 +47,14 @@ const SignupFormComponent = props => (
         userFields,
         values,
       } = formRenderProps;
-
+      console.log('userFields :>> ', userFields);
       const { userType } = values || {};
-
+      const addressRequiredMessage = intl.formatMessage({
+        id: 'EditListingLocationForm.addressRequired',
+      });
+      const addressNotRecognizedMessage = intl.formatMessage({
+        id: 'EditListingLocationForm.addressNotRecognized',
+      });
       // email
       const emailRequired = validators.required(
         intl.formatMessage({
@@ -95,23 +108,76 @@ const SignupFormComponent = props => (
 
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
+      const filteredPrefernce = userFields.filter(
+        item => item.key == 'Productorservices'
+      );
+      console.log('filteredPrefernce :>> ', filteredPrefernce);
       const showDefaultUserFields = userType || noUserTypes;
       const showCustomUserFields = (userType || noUserTypes) && userFieldProps?.length > 0;
+      const fileExists = !!profileImage?.file;
+      const fileUploadInProgress = uploadInProgress && fileExists;
+      const delayAfterUpload = profileImage?.imageId && this.state.uploadDelay;
+      const imageFromFile =
+        fileExists && (fileUploadInProgress || delayAfterUpload) ? (
+          <ImageFromFile
+            id={profileImage.id}
+            className={errorClasses}
+            rootClassName={css.uploadingImage}
+            aspectWidth={1}
+            aspectHeight={1}
+            file={profileImage.file}
+          >
+            {uploadingOverlay}
+          </ImageFromFile>
+        ) : null;
 
+      // Avatar is rendered in hidden during the upload delay
+      // Upload delay smoothes image change process:
+      // responsive img has time to load srcset stuff before it is shown to user.
+      const hasUploadError = !!uploadImageError && !uploadInProgress;
+      const errorClasses = classNames({ [css.avatarUploadError]: hasUploadError });
+      const avatarClasses = classNames(errorClasses, css.avatar, {
+        [css.avatarInvisible]: this.state.uploadDelay,
+      });
+
+      const avatarComponent =
+      !fileUploadInProgress && profileImage.imageId ? (
+        <Avatar
+          className={avatarClasses}
+          renderSizes="(max-width: 767px) 96px, 240px"
+          user={transientUser}
+          disableProfileLink
+        />
+      ) : null;
+
+    const chooseAvatarLabel =
+      profileImage.imageId || fileUploadInProgress ? (
+        <div className={css.avatarContainer}>
+          {imageFromFile}
+          {avatarComponent}
+          <div className={css.changeAvatar}>
+            <FormattedMessage id="ProfileSettingsForm.changeAvatar" />
+          </div>
+        </div>
+      ) : (
+        <div className={css.avatarPlaceholder}>
+          <div className={css.avatarPlaceholderText}>
+            <FormattedMessage id="ProfileSettingsForm.addYourProfilePicture" />
+          </div>
+          <div className={css.avatarPlaceholderTextMobile}>
+            <FormattedMessage id="ProfileSettingsForm.addYourProfilePictureMobile" />
+          </div>
+        </div>
+      );
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
       const submitDisabled = invalid || submitInProgress;
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <FieldSelectUserType
-            name="userType"
-            userTypes={userTypes}
-            hasExistingUserType={!!preselectedUserType}
-            intl={intl}
-          />
 
-          {showDefaultUserFields ? (
+
+          {/* {showDefaultUserFields ? (
             <div className={css.defaultUserFields}>
               <FieldTextInput
                 type="email"
@@ -194,8 +260,242 @@ const SignupFormComponent = props => (
                 intl={intl}
               />
             </div>
-          ) : null}
+          ) : null} */}
+          <div className={css.defaultUserFields}>
+            <FieldTextInput
+              type="email"
+              id={formId ? `${formId}.email` : 'email'}
+              name="email"
+              autoComplete="email"
+              label={intl.formatMessage({
+                id: 'SignupForm.emailLabel',
+              })}
+              placeholder={intl.formatMessage({
+                id: 'SignupForm.emailPlaceholder',
+              })}
+              validate={validators.composeValidators(emailRequired, emailValid)}
+            />
+            <div className={css.name}>
+              <FieldTextInput
+                className={css.firstNameRoot}
+                type="text"
+                id={formId ? `${formId}.fname` : 'fname'}
+                name="fname"
+                autoComplete="given-name"
+                label={intl.formatMessage({
+                  id: 'SignupForm.firstNameLabel',
+                })}
+                placeholder={intl.formatMessage({
+                  id: 'SignupForm.firstNamePlaceholder',
+                })}
+                validate={validators.required(
+                  intl.formatMessage({
+                    id: 'SignupForm.firstNameRequired',
+                  })
+                )}
+              />
+              <FieldTextInput
+                className={css.lastNameRoot}
+                type="text"
+                id={formId ? `${formId}.lname` : 'lname'}
+                name="lname"
+                autoComplete="family-name"
+                label={intl.formatMessage({
+                  id: 'SignupForm.lastNameLabel',
+                })}
+                placeholder={intl.formatMessage({
+                  id: 'SignupForm.lastNamePlaceholder',
+                })}
+                validate={validators.required(
+                  intl.formatMessage({
+                    id: 'SignupForm.lastNameRequired',
+                  })
+                )}
+              />
+            </div>
 
+            <UserFieldDisplayName
+              formName="SignupForm"
+              className={css.row}
+              userTypeConfig={userTypeConfig}
+              intl={intl}
+            />
+
+            <FieldTextInput
+              className={css.password}
+              type="password"
+              id={formId ? `${formId}.password` : 'password'}
+              name="password"
+              autoComplete="new-password"
+              label={intl.formatMessage({
+                id: 'SignupForm.passwordLabel',
+              })}
+              placeholder={intl.formatMessage({
+                id: 'SignupForm.passwordPlaceholder',
+              })}
+              validate={passwordValidators}
+            />
+
+          </div>
+
+          <FieldSelectUserType
+            name="userType"
+            userTypes={userTypes}
+            hasExistingUserType={!!preselectedUserType}
+            intl={intl}
+          />
+          <FieldTextInput
+            // className={css.lastNameRoot}
+            type="text"
+            id={formId ? `${formId}.company_name` : 'company_name'}
+            name="company_name"
+            autoComplete="family-name"
+            label={intl.formatMessage({
+              id: 'SignupForm.companyNameLabel',
+            })}
+            placeholder={intl.formatMessage({
+              id: 'SignupForm.companyNamePlaceholder',
+            })}
+            validate={validators.required(
+              intl.formatMessage({
+                id: 'SignupForm.companyNameRequired',
+              })
+            )}
+          />
+
+          <FieldLocationAutocompleteInput
+            rootClassName={css.locationAddress}
+            inputClassName={css.locationAutocompleteInput}
+            iconClassName={css.locationAutocompleteInputIcon}
+            predictionsClassName={css.predictionsRoot}
+            validClassName={css.validLocation}
+            // autoFocus={autoFocus}
+            name="location"
+            label={intl.formatMessage({ id: 'EditListingLocationForm.address' })}
+            placeholder={intl.formatMessage({
+              id: 'EditListingLocationForm.addressPlaceholder',
+            })}
+            useDefaultPredictions={false}
+            format={identity}
+            valueFromForm={values.location}
+            validate={validators.composeValidators(
+              validators.autocompleteSearchRequired(addressRequiredMessage),
+              validators.autocompletePlaceSelected(addressNotRecognizedMessage)
+            )}
+          />
+
+
+          <UserFieldPhoneNumber
+            formName="SignupForm"
+            className={css.row}
+            userTypeConfig={userTypeConfig}
+            intl={intl}
+          />
+
+
+          <FieldLocationAutocompleteInput
+            rootClassName={css.locationAddress}
+            inputClassName={css.locationAutocompleteInput}
+            iconClassName={css.locationAutocompleteInputIcon}
+            predictionsClassName={css.predictionsRoot}
+            validClassName={css.validLocation}
+            // autoFocus={autoFocus}
+            name="location"
+            label={intl.formatMessage({ id: 'EditListingLocationForm.address' })}
+            placeholder={intl.formatMessage({
+              id: 'EditListingLocationForm.addressPlaceholder',
+            })}
+            useDefaultPredictions={false}
+            format={identity}
+            valueFromForm={values.location}
+            validate={validators.composeValidators(
+              validators.autocompleteSearchRequired(addressRequiredMessage),
+              validators.autocompletePlaceSelected(addressNotRecognizedMessage)
+            )}
+          />
+          <FieldSelect
+            className={css.customField}
+            name="productService"
+            id={formId ? `${formId}.${"productService"}` : "productService"}
+            label={intl.formatMessage({
+              id: 'SignupForm.companyNameLabel',
+            })}
+            placeholder={intl.formatMessage({
+              id: 'SignupForm.companyNamePlaceholder',
+            })}
+          // {...validateMaybe}
+          >
+
+            <Field
+              accept={ACCEPT_IMAGES}
+              id="profileImage"
+              name="profileImage"
+              label={chooseAvatarLabel}
+              type="file"
+              formId={null}
+              uploadImageError={uploadImageError}
+              disabled={uploadInProgress}
+            >
+              {fieldProps => {
+                const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
+                const { name, type } = input;
+                const onChange = e => {
+                  const file = e.target.files[0];
+                  formId.change(`profileImage`, file);
+                  formId.blur(`profileImage`);
+                  if (file != null) {
+                    const tempId = `${file.name}_${Date.now()}`;
+                    onImageUpload({ id: tempId, file });
+                  }
+                };
+
+                let error = null;
+
+                if (isUploadImageOverLimitError(uploadImageError)) {
+                  error = (
+                    <div className={css.error}>
+                      <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
+                    </div>
+                  );
+                } else if (uploadImageError) {
+                  error = (
+                    <div className={css.error}>
+                      <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className={css.uploadAvatarWrapper}>
+                    <label className={css.label} htmlFor={id}>
+                      {label}
+                    </label>
+                    <input
+                      accept={accept}
+                      id={id}
+                      name={name}
+                      className={css.uploadAvatarInput}
+                      disabled={disabled}
+                      onChange={onChange}
+                      type={type}
+                    />
+                    {error}
+                  </div>
+                );
+              }}
+            </Field>
+            <option disabled value="">
+              {placeholder}
+            </option>
+            {filterOptions.map(optionConfig => {
+              const key = optionConfig.key;
+              return (
+                <option key={key} value={key}>
+                  {optionConfig.label}
+                </option>
+              );
+            })}
+          </FieldSelect>
           {showCustomUserFields ? (
             <div className={css.customFields}>
               {userFieldProps.map(({ key, ...fieldProps }) => (

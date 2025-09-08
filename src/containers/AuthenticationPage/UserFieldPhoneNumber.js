@@ -24,6 +24,7 @@ const UserFieldPhoneNumber = props => {
   const { rootClassName, className, formId, formName, userTypeConfig, intl } = props;
 
   const { displayInSignUp, required } = userTypeConfig?.phoneNumberSettings || {};
+  console.log('displayInSignUp :>> ', displayInSignUp);
   const isDisabled = userTypeConfig?.defaultUserFields?.phoneNumber === false;
   const isAllowedInSignUp = displayInSignUp === true;
 
