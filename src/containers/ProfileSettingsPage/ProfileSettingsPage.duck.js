@@ -1,6 +1,6 @@
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
-import { currentUserShowSuccess } from '../../ducks/user.duck';
+import { currentUserShowSuccess, fetchCurrentUser } from '../../ducks/user.duck';
 
 // ================ Action types ================ //
 
@@ -155,7 +155,7 @@ export const updateProfile = actionPayload => {
         const currentUser = entities[0];
 
         // Update current user in state.user.currentUser through user.duck.js
-        dispatch(currentUserShowSuccess(currentUser));
+          dispatch(currentUserShowSuccess(currentUser));
       })
       .catch(e => dispatch(updateProfileError(storableError(e))));
   };
