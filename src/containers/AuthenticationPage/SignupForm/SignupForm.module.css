@@ -44,8 +44,7 @@
   height: 18px;
   border: none;
   border-radius: 50%;
-  background-color: #ff4444;
-  color: white;
+  background-color: white;
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
@@ -53,10 +52,6 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-}
-
-.removeButton:hover {
-  background-color: #cc0000;
 }
 
 .crossIcon {

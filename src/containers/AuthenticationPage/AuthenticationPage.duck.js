@@ -81,7 +81,7 @@ export const uploadProfileImage = (payload) => (dispatch, getState, sdk) => {
           return response
         })
         .catch(e => {
-          dispatch(uploadImageError({ error: storableError(e) }))
+          console.error('Error updating profile image', e);
           return;
         });
     })

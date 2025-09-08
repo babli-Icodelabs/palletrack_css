@@ -16,6 +16,7 @@ import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
 import css from './SignupForm.module.css';
 import { isUploadImageOverLimitError } from '../../../util/errors';
+import { IconCollection } from '../../../components/IconCollection/IconCollection';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // S
@@ -544,9 +545,8 @@ const SignupFormComponent = props => (
                           type="button"
                           onClick={handleRemoveImage}
                           className={css.removeButton}
-                          title={intl.formatMessage({ id: 'SignupForm.removeImage' })}
                         >
-                          <span className={css.crossIcon}>×</span>
+                          <IconCollection iconName='crossIcon' />
                         </button>
 
                         {uploadInProgress && (
