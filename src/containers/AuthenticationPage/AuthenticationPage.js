@@ -215,11 +215,15 @@ export const AuthenticationForms = props => {
   ];
 
   const handleSubmitSignup = values => {
-    const { userType, email, password, fname, lname, displayName, companyName, location, ...rest } = values;
+    const { userType, email, password, fname, lname, displayName, companyName, headquarterAddress, yardLocations,
+      UrgencyLevel, companyWebsite, canwehelp,serviceRegions,crewSize, ...rest } = values;
     const {
       selectedPlace: { address, origin },
-    } = location;
+    } = headquarterAddress;
 
+    const {
+      selectedPlace: { address: yardAddress, origin: yardOrgin },
+    } = yardLocations
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
     const params = {
@@ -230,8 +234,14 @@ export const AuthenticationForms = props => {
       ...displayNameMaybe,
       publicData: {
         userType,
+        crewSize,
         companyName,
-        location: { address, geolocation: origin },
+        companyWebsite,
+        UrgencyLevel,
+        canwehelp,
+        serviceRegions,
+        yardLocations: { address: yardAddress, geolocation: yardOrgin },
+        headquarterAddress: { address, geolocation: origin },
         ...pickUserFieldsData(rest, 'public', userType, userFields),
       },
       privateData: {
@@ -244,10 +254,10 @@ export const AuthenticationForms = props => {
     };
 
     submitSignup(params)
-    .then(() => {
-      uploadProfileImage(image)
-    })
-    .catch((error) => {console.log("Error uploading Image: ", error)})
+      .then(() => {
+        uploadProfileImage(image)
+      })
+      .catch((error) => { console.log("Error uploading Image: ", error) })
   };
 
   const loginErrorMessage = (

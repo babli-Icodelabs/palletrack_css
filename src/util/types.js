@@ -727,3 +727,6 @@ propTypes.dateType = oneOf([DATE_TYPE_DATE, DATE_TYPE_TIME, DATE_TYPE_DATETIME])
 export const colorSchemes = ['white', 'grey', 'black', 'main-brand', 'primary-button'];
 
 export { propTypes };
+export const DEALER = "dealer";
+export const BUYER = "buyer";
+export const INSTALLER = 'installer';
