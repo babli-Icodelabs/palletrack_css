@@ -10,6 +10,7 @@ import SectionBuilder from './SectionBuilder/SectionBuilder.js';
 import StaticPage from './StaticPage.js';
 
 import css from './PageBuilder.module.css';
+import './LandingPage.module.css'
 
 const getMetadata = (meta, schemaType, fieldOptions) => {
   const { pageTitle, pageDescription, socialSharing } = meta;
@@ -108,9 +109,10 @@ const PageBuilder = props => {
     schemaType,
     options,
     currentPage,
+    handleOpen,
+    handleClose,
     ...pageProps
   } = props;
-
   if (!pageAssetsData && fallbackPage && !inProgress && error) {
     return fallbackPage;
   }
@@ -140,7 +142,11 @@ const PageBuilder = props => {
                 {sections.length === 0 && inProgress ? (
                   <LoadingSpinner />
                 ) : (
-                  <SectionBuilder sections={sections} options={options} />
+                  <SectionBuilder
+                    sections={sections}
+                    options={options}
+                    handleOpen={handleOpen}
+                  />
                 )}
               </Main>
               <Footer>

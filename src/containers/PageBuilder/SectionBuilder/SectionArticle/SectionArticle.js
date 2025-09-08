@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import Field, { hasDataInFields } from '../../Field';
 import BlockBuilder from '../../BlockBuilder';
 
 import SectionContainer from '../SectionContainer';
+
+import FeatureOfTheWeek from '../../../../components/FeatureOfTheWeek/FeatureOfTheWeek';
+import FeaturedListings from '../../../../components/FeaturedListings/FeaturedListings';
+import { Button, Modal } from '../../../../components';
+
 import css from './SectionArticle.module.css';
 
 /**
@@ -58,15 +63,25 @@ const SectionArticle = props => {
     blocks = [],
     isInsideContainer = false,
     options,
+    handleOpen,
   } = props;
 
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
   const fieldComponents = options?.fieldComponents;
   const fieldOptions = { fieldComponents };
-
   const hasHeaderFields = hasDataInFields([title, description, callToAction], fieldOptions);
   const hasBlocks = blocks?.length > 0;
+
+  if (sectionId === 'feature_of_the_week') {
+    return <FeatureOfTheWeek />
+  }
+  if (sectionId === 'featured_listings') {
+    return <FeaturedListings />
+  }
+  if (sectionId === 'let_us_help') {
+    return <div className={css.letUsHelp}><h1>In search of something specific? Let us help</h1> <Button type='button' onClick={() => { handleOpen() }}>Contact us</Button></div>
+  }
 
   return (
     <SectionContainer
