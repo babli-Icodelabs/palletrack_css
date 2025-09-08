@@ -43,11 +43,8 @@ const SignupFormComponent = props => (
         userFields,
         values,
         form: formId,
-        image,
         uploadImageError,
         uploadInProgress,
-        updateInProgress,
-        updateProfileError,
         onImageUpload,
         onRemoveImage,
         previewUrl
@@ -116,7 +113,8 @@ const SignupFormComponent = props => (
       const filteredPrefernce = userFields.filter(
         item => item.key == 'Productorservices'
       );
-      console.log('filteredPrefernce :>> ', filteredPrefernce);
+      console.log('filteredPrefernce :>> ', filteredPrefernce[0]?.enumOptions);
+      const productORServices = filteredPrefernce[0]?.enumOptions
       const showDefaultUserFields = userType || noUserTypes;
       const showCustomUserFields = (userType || noUserTypes) && userFieldProps?.length > 0;
       const fileExists = !!profileImage?.file;
@@ -427,6 +425,31 @@ const SignupFormComponent = props => (
             intl={intl}
           />
 
+          <FieldSelect
+            className={css.customField}
+            name="productService"
+            id={formId ? `${formId}.${"productService"}` : "productService"}
+            label={intl.formatMessage({
+              id: 'SignupForm.companyNameLabel',
+            })}
+          // placeholder={intl.formatMessage({
+          //   id: 'SignupForm.companyNamePlaceholder',
+          // })}
+          // {...validateMaybe}
+          >
+            <option disabled value="">
+              {"placeholder"}
+            </option>
+            {productORServices.map(optionConfig => {
+              const key = optionConfig.key;
+              return (
+                <option key={key} value={key}>
+                  {optionConfig.label}
+                </option>
+              );
+            })}
+          </FieldSelect>
+
           <Field
             accept={ACCEPT_IMAGES}
             id="profileImage"
@@ -540,37 +563,14 @@ const SignupFormComponent = props => (
               );
             }}
           </Field>
-          {/* <FieldSelect
-            className={css.customField}
-            name="productService"
-            id={formId ? `${formId}.${"productService"}` : "productService"}
-            label={intl.formatMessage({
-              id: 'SignupForm.companyNameLabel',
-            })}
-            placeholder={intl.formatMessage({
-              id: 'SignupForm.companyNamePlaceholder',
-            })}
-          // {...validateMaybe}
-          >
-            <option disabled value="">
-              {placeholder}
-            </option>
-            {filterOptions.map(optionConfig => {
-              const key = optionConfig.key;
-              return (
-                <option key={key} value={key}>
-                  {optionConfig.label}
-                </option>
-              );
-            })}
-          </FieldSelect> */}
-          {showCustomUserFields ? (
+
+          {/* {showCustomUserFields ? (
             <div className={css.customFields}>
               {userFieldProps.map(({ key, ...fieldProps }) => (
                 <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
               ))}
             </div>
-          ) : null}
+          ) : null} */}
 
           <div className={css.bottomWrapper}>
             {termsAndConditions}
