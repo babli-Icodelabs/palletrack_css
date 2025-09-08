@@ -135,7 +135,7 @@
 }
 :global(#three_steps) {
   & > div {
-    & h2 {
+    & button {
       font-family: Archivo Black;
       font-weight: 400;
       font-style: Regular;
@@ -153,6 +153,9 @@
       text-align: center;
       &:last-child {
         margin: 0;
+      }
+      &:hover {
+        background-color: #125a3b;
       }
       @media (max-width: 1300px) {
         font-size: 42px;
@@ -193,6 +196,12 @@
             background-color: #ffffff;
             border-radius: 20px;
             padding: 24px;
+            &>div{
+                display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    height: 100%;
+            }
             & h3 {
               font-family: Archivo Black;
               font-weight: 400;

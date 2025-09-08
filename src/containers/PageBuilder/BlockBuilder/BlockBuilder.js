@@ -4,6 +4,7 @@ import React from 'react';
 import BlockDefault from './BlockDefault';
 import BlockFooter from './BlockFooter';
 import BlockSocialMediaLink from './BlockSocialMediaLink';
+import { Button } from '../../../components';
 
 ///////////////////////////////////////////
 // Mapping of block types and components //
@@ -64,7 +65,9 @@ const BlockBuilder = props => {
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
   const { blockComponents, fieldComponents } = options || {};
-  const blockOptionsMaybe = fieldComponents ? { options: { fieldComponents } } : {};
+  const blockOptionsMaybe = fieldComponents
+    ? { options: { fieldComponents } }
+    : {};
 
   // If there's no block, we can't render the correct block component
   if (!blocks || blocks.length === 0) {
@@ -81,8 +84,23 @@ const BlockBuilder = props => {
         const config = components[block.blockType];
         const Block = config?.component;
         const blockId = block.blockId || `${sectionId}-block-${index + 1}`;
-
-        if (Block) {
+        if (blockId === 'three_steps-block-2') {
+          return (
+            <div>
+              <Button>SEARCH</Button>
+              <Button>FIND</Button>
+              <Button>BUY</Button>
+            </div>
+          );
+        } else if (blockId === 'three_steps-block-3') {
+          return (
+            <div>
+              <Button>LIST</Button>
+              <Button>CONNECT</Button>
+              <Button>SELL</Button>
+            </div>
+          );
+        } else if (Block) {
           return (
             <Block
               key={`${blockId}_i${index}`}
@@ -94,7 +112,9 @@ const BlockBuilder = props => {
           );
         } else {
           // If the block type is unknown, the app can't know what to render
-          console.warn(`Unknown block type (${block.blockType}) detected inside (${sectionId}).`);
+          console.warn(
+            `Unknown block type (${block.blockType}) detected inside (${sectionId}).`
+          );
           return null;
         }
       })}
