@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -24,753 +24,590 @@ const UPLOAD_CHANGE_DELAY = 2000; // S
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
 const identity = v => v;
-const SignupFormComponent = props => (
-  <FinalForm
-    {...props}
-    mutators={{ ...arrayMutators }}
-    initialValues={{ userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) }}
-    render={formRenderProps => {
-      const {
-        rootClassName,
-        className,
-        handleSubmit,
-        inProgress,
-        invalid,
-        profileImage,
-        intl,
-        termsAndConditions,
-        preselectedUserType,
-        userTypes,
-        userFields,
-        values,
-        form: formId,
-        uploadImageError,
-        uploadInProgress,
-        onImageUpload,
-        onRemoveImage,
-        previewUrl
-      } = formRenderProps;
-      const { userType } = values || {};
-      console.log('userType :>> ', userType);
-      const addressRequiredMessage = intl.formatMessage({
-        id: 'EditListingLocationForm.addressRequired',
-      });
-      const addressNotRecognizedMessage = intl.formatMessage({
-        id: 'EditListingLocationForm.addressNotRecognized',
-      });
-      // email
-      const emailRequired = validators.required(
-        intl.formatMessage({
-          id: 'SignupForm.emailRequired',
-        })
-      );
-      const emailValid = validators.emailFormatValid(
-        intl.formatMessage({
-          id: 'SignupForm.emailInvalid',
-        })
-      );
+const SignupFormComponent = props => {
+  const [showRoleFields, setShowRoleFields] = useState(false);
+  const [showCompanyDetails, setShowCompanyDetails] = useState(false);
 
-      // password
-      const passwordRequiredMessage = intl.formatMessage({
-        id: 'SignupForm.passwordRequired',
-      });
-      const passwordMinLengthMessage = intl.formatMessage(
-        {
-          id: 'SignupForm.passwordTooShort',
-        },
-        {
-          minLength: validators.PASSWORD_MIN_LENGTH,
-        }
-      );
-      const passwordMaxLengthMessage = intl.formatMessage(
-        {
-          id: 'SignupForm.passwordTooLong',
-        },
-        {
-          maxLength: validators.PASSWORD_MAX_LENGTH,
-        }
-      );
-      const passwordMinLength = validators.minLength(
-        passwordMinLengthMessage,
-        validators.PASSWORD_MIN_LENGTH
-      );
-      const passwordMaxLength = validators.maxLength(
-        passwordMaxLengthMessage,
-        validators.PASSWORD_MAX_LENGTH
-      );
-      const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
-      const passwordValidators = validators.composeValidators(
-        passwordRequired,
-        passwordMinLength,
-        passwordMaxLength
-      );
+  return (
+    <FinalForm
+      {...props}
+      mutators={{ ...arrayMutators }}
+      initialValues={{ userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) }}
+      render={formRenderProps => {
+        const {
+          rootClassName,
+          className,
+          handleSubmit,
+          inProgress,
+          invalid,
+          profileImage,
+          intl,
+          termsAndConditions,
+          preselectedUserType,
+          userTypes,
+          userFields,
+          values,
+          form: formId,
+          uploadImageError,
+          uploadInProgress,
+          onImageUpload,
+          onRemoveImage,
+          previewUrl
+        } = formRenderProps;
 
-      // Custom user fields. Since user types are not supported here,
-      // only fields with no user type id limitation are selected.
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, intl, userType);
+        const { userType } = values || {};
+        console.log('userType :>> ', userType);
 
-      const noUserTypes = !userType && !(userTypes?.length > 0);
-      const userTypeConfig = userTypes.find(config => config.userType === userType);
-      const filteredPrefernce = userFields.filter(
-        item => item.key == 'Productorservices'
-      );
-      const urgencyLevel = userFields.filter(
-        item => item.key == 'urgency_level'
-      );
-      const canwehelp = userFields.filter(
-        item => item.key == 'canwehelp'
-      );
-      const serviceRegions = userFields.filter(
-        item => item.key == 'service_regions'
-      );
-      const systemExpertise = userFields.filter(
-        item => item.key == 'system_expertise'
-      );
-      const productORServices = filteredPrefernce[0]?.enumOptions;
-      const urgencyLevelOption = urgencyLevel[0]?.enumOptions;
-      const canwehelpOption = canwehelp[0]?.enumOptions;
-      const serviceRegionsOption = serviceRegions[0]?.enumOptions;
-      const systemExpertiseOption = systemExpertise[0]?.enumOptions;
-      
-      const showDefaultUserFields = userType || noUserTypes;
-      const showCustomUserFields = (userType || noUserTypes) && userFieldProps?.length > 0;
-      const fileExists = !!profileImage?.file;
-      const fileUploadInProgress = uploadInProgress && fileExists;
-      const delayAfterUpload = profileImage?.imageId && this.state.uploadDelay;
-      const imageFromFile =
-        fileExists && (fileUploadInProgress || delayAfterUpload) ? (
-          <ImageFromFile
-            id={profileImage.id}
-            className={errorClasses}
-            rootClassName={css.uploadingImage}
-            aspectWidth={1}
-            aspectHeight={1}
-            file={profileImage.file}
-          >
-            {uploadingOverlay}
-          </ImageFromFile>
-        ) : null;
+        const addressRequiredMessage = intl.formatMessage({
+          id: 'EditListingLocationForm.addressRequired',
+        });
+        const addressNotRecognizedMessage = intl.formatMessage({
+          id: 'EditListingLocationForm.addressNotRecognized',
+        });
 
-      // Avatar is rendered in hidden during the upload delay
-      // Upload delay smoothes image change process:
-      // responsive img has time to load srcset stuff before it is shown to user.
-      const hasUploadError = !!uploadImageError && !uploadInProgress;
-      const errorClasses = classNames({ [css.avatarUploadError]: hasUploadError });
-      const classes = classNames(rootClassName || css.root, className);
-      const submitInProgress = inProgress;
-      const submitDisabled = invalid || submitInProgress;
+        // email
+        const emailRequired = validators.required(
+          intl.formatMessage({
+            id: 'SignupForm.emailRequired',
+          })
+        );
+        const emailValid = validators.emailFormatValid(
+          intl.formatMessage({
+            id: 'SignupForm.emailInvalid',
+          })
+        );
 
-      return (
-        <Form className={classes} onSubmit={handleSubmit}>
+        // password
+        const passwordRequiredMessage = intl.formatMessage({
+          id: 'SignupForm.passwordRequired',
+        });
+        const passwordMinLengthMessage = intl.formatMessage(
+          {
+            id: 'SignupForm.passwordTooShort',
+          },
+          {
+            minLength: validators.PASSWORD_MIN_LENGTH,
+          }
+        );
+        const passwordMaxLengthMessage = intl.formatMessage(
+          {
+            id: 'SignupForm.passwordTooLong',
+          },
+          {
+            maxLength: validators.PASSWORD_MAX_LENGTH,
+          }
+        );
+        const passwordMinLength = validators.minLength(
+          passwordMinLengthMessage,
+          validators.PASSWORD_MIN_LENGTH
+        );
+        const passwordMaxLength = validators.maxLength(
+          passwordMaxLengthMessage,
+          validators.PASSWORD_MAX_LENGTH
+        );
+        const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
+        const passwordValidators = validators.composeValidators(
+          passwordRequired,
+          passwordMinLength,
+          passwordMaxLength
+        );
 
+        // Custom user fields
+        const userFieldProps = getPropsForCustomUserFieldInputs(userFields, intl, userType);
+        const userTypeConfig = userTypes.find(config => config.userType === userType);
 
-          {/* {showDefaultUserFields ? (
-            <div className={css.defaultUserFields}>
-              <FieldTextInput
-                type="email"
-                id={formId ? `${formId}.email` : 'email'}
-                name="email"
-                autoComplete="email"
-                label={intl.formatMessage({
-                  id: 'SignupForm.emailLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.emailPlaceholder',
-                })}
-                validate={validators.composeValidators(emailRequired, emailValid)}
-              />
-              <div className={css.name}>
-                <FieldTextInput
-                  className={css.firstNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.fname` : 'fname'}
-                  name="fname"
-                  autoComplete="given-name"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.firstNameLabel',
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: 'SignupForm.firstNamePlaceholder',
-                  })}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'SignupForm.firstNameRequired',
-                    })
-                  )}
-                />
-                <FieldTextInput
-                  className={css.lastNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.lname` : 'lname'}
-                  name="lname"
-                  autoComplete="family-name"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.lastNameLabel',
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: 'SignupForm.lastNamePlaceholder',
-                  })}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'SignupForm.lastNameRequired',
-                    })
-                  )}
-                />
-              </div>
+        const filteredPrefernce = userFields.filter(item => item.key == 'Productorservices');
+        const urgencyLevel = userFields.filter(item => item.key == 'urgency_level');
+        const canwehelp = userFields.filter(item => item.key == 'canwehelp');
+        const serviceRegions = userFields.filter(item => item.key == 'service_regions');
+        const systemExpertise = userFields.filter(item => item.key == 'system_expertise');
 
-              <UserFieldDisplayName
-                formName="SignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
-              />
+        const productORServices = filteredPrefernce[0]?.enumOptions;
+        const urgencyLevelOption = urgencyLevel[0]?.enumOptions;
+        const canwehelpOption = canwehelp[0]?.enumOptions;
+        const serviceRegionsOption = serviceRegions[0]?.enumOptions;
+        const systemExpertiseOption = systemExpertise[0]?.enumOptions;
 
-              <FieldTextInput
-                className={css.password}
-                type="password"
-                id={formId ? `${formId}.password` : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label={intl.formatMessage({
-                  id: 'SignupForm.passwordLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.passwordPlaceholder',
-                })}
-                validate={passwordValidators}
-              />
+        const classes = classNames(rootClassName || css.root, className);
+        const submitInProgress = inProgress;
+        const submitDisabled = invalid || submitInProgress;
 
-              <UserFieldPhoneNumber
-                formName="SignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
-              />
-
-              <div className={css.profileImage}>
-                <Field
-                  accept={ACCEPT_IMAGES}
-                  id="profileImage"
-                  name="profileImage"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.profileImageLabel',
-                  })}
-                  type="file"
-                  form={null}
-                  uploadImageError={uploadImageError}
-                  disabled={uploadInProgress}
-                >
-                  {fieldProps => {
-                    const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
-                    const { name, type } = input;
-                    const onChange = e => {
-                      const file = e.target.files[0];
-                      form.change(`profileImage`, file);
-                      form.blur(`profileImage`);
-                      if (file != null) {
-                        const tempId = `${file.name}_${Date.now()}`;
-                        onImageUpload({ id: tempId, file });
-                      }
-                    };
-
-                    let error = null;
-
-                    if (isUploadImageOverLimitError(uploadImageError)) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
-                        </div>
-                      );
-                    } else if (uploadImageError) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className={css.uploadAvatarWrapper}>
-                        <label className={css.label} htmlFor={id}>
-                          {label}
-                        </label>
-                        <input
-                          accept={accept}
-                          id={id}
-                          name={name}
-                          className={css.uploadAvatarInput}
-                          disabled={disabled}
-                          onChange={onChange}
-                          type={type}
-                        />
-                        {error}
-                      </div>
-                    );
-                  }}
-                </Field>
-              </div>
-            </div>
-          ) : null} */}
-          <div className={css.defaultUserFields}>
-            <FieldTextInput
-              type="email"
-              id={formId ? `${formId}.email` : 'email'}
-              name="email"
-              autoComplete="email"
-              label={intl.formatMessage({
-                id: 'SignupForm.emailLabel',
-              })}
-              placeholder={intl.formatMessage({
-                id: 'SignupForm.emailPlaceholder',
-              })}
-              validate={validators.composeValidators(emailRequired, emailValid)}
-            />
-            <div className={css.name}>
-              <FieldTextInput
-                className={css.firstNameRoot}
-                type="text"
-                id={formId ? `${formId}.fname` : 'fname'}
-                name="fname"
-                autoComplete="given-name"
-                label={intl.formatMessage({
-                  id: 'SignupForm.firstNameLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.firstNamePlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({
-                    id: 'SignupForm.firstNameRequired',
-                  })
-                )}
-              />
-              <FieldTextInput
-                className={css.lastNameRoot}
-                type="text"
-                id={formId ? `${formId}.lname` : 'lname'}
-                name="lname"
-                autoComplete="family-name"
-                label={intl.formatMessage({
-                  id: 'SignupForm.lastNameLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.lastNamePlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({
-                    id: 'SignupForm.lastNameRequired',
-                  })
-                )}
-              />
-            </div>
-            {/* 
-            <UserFieldDisplayName
-              formName="SignupForm"
-              className={css.row}
-              userTypeConfig={userTypeConfig}
-              intl={intl}
-            /> */}
-
-            <FieldTextInput
-              className={css.password}
-              type="password"
-              id={formId ? `${formId}.password` : 'password'}
-              name="password"
-              autoComplete="new-password"
-              label={intl.formatMessage({
-                id: 'SignupForm.passwordLabel',
-              })}
-              placeholder={intl.formatMessage({
-                id: 'SignupForm.passwordPlaceholder',
-              })}
-              validate={passwordValidators}
-            />
-
-          </div>
-
-          <FieldSelectUserType
-            name="userType"
-            userTypes={userTypes}
-            hasExistingUserType={!!preselectedUserType}
-            intl={intl}
-          />
-          {showCustomUserFields ?
-            <div>
-
-              <FieldTextInput
-                // className={css.lastNameRoot}
-                type="text"
-                id={formId ? `${formId}.companyName` : 'companyName'}
-                name="companyName"
-                autoComplete="family-name"
-                label={intl.formatMessage({
-                  id: 'SignupForm.companyNameLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.companyNamePlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({
-                    id: 'SignupForm.companyNameRequired',
-                  })
-                )}
-              />
-
-              <FieldLocationAutocompleteInput
-                rootClassName={css.locationAddress}
-                inputClassName={css.locationAutocompleteInput}
-                iconClassName={css.locationAutocompleteInputIcon}
-                predictionsClassName={css.predictionsRoot}
-                validClassName={css.validLocation}
-                // autoFocus={autoFocus}
-                name="headquarterAddress"
-                label={intl.formatMessage({ id: userType == BUYER ? "SignupForm.companyAddressLabel" : 'SignupForm.headquarterAddressLabel' })}
-                placeholder={intl.formatMessage({
-                  id: 'EditListingLocationForm.addressPlaceholder',
-                })}
-                useDefaultPredictions={false}
-                format={identity}
-                valueFromForm={values.headquarterAddress}
-                validate={validators.composeValidators(
-                  validators.autocompleteSearchRequired(addressRequiredMessage),
-                  validators.autocompletePlaceSelected(addressNotRecognizedMessage)
-                )}
-              />
-
-              {userType == INSTALLER &&
-                <div>
-                  <FieldCheckboxGroup
-                    className={css.customField}
-                    name="serviceRegions"
-                    id={formId ? `${formId}.serviceRegions` : "serviceRegions"}
-                    label={intl.formatMessage({
-                      id: 'SignupForm.productsOrServicesLabel',
-                    })}
-                    options={serviceRegionsOption.map(optionConfig => ({
-                      key: optionConfig.option,
-                      label: optionConfig.label,
-                    }))}
-                  />
-
+        return (
+          <Form className={classes} onSubmit={handleSubmit}>
+            {!showRoleFields && (
+              <>
+                <div className={css.defaultUserFields}>
                   <FieldTextInput
-                    // className={css.lastNameRoot}
-                    type="number"
-                    id={formId ? `${formId}.crewSize` : 'crewSize'}
-                    name="crewSize"
+                    type="email"
+                    id={formId ? `${formId}.email` : 'email'}
+                    name="email"
+                    autoComplete="email"
                     label={intl.formatMessage({
-                      id: 'SignupForm.crewSizeLabel',
+                      id: 'SignupForm.emailLabel',
                     })}
                     placeholder={intl.formatMessage({
-                      id: 'SignupForm.companyNamePlaceholder',
+                      id: 'SignupForm.emailPlaceholder',
                     })}
+                    validate={validators.composeValidators(emailRequired, emailValid)}
                   />
-                </div>
-              }
-              <UserFieldPhoneNumber
-                formName="SignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
-              />
-
-              {userType == INSTALLER &&
-                <div>
+                  <div className={css.name}>
+                    <FieldTextInput
+                      className={css.firstNameRoot}
+                      type="text"
+                      id={formId ? `${formId}.fname` : 'fname'}
+                      name="fname"
+                      autoComplete="given-name"
+                      label={intl.formatMessage({
+                        id: 'SignupForm.firstNameLabel',
+                      })}
+                      placeholder={intl.formatMessage({
+                        id: 'SignupForm.firstNamePlaceholder',
+                      })}
+                      validate={validators.required(
+                        intl.formatMessage({
+                          id: 'SignupForm.firstNameRequired',
+                        })
+                      )}
+                    />
+                    <FieldTextInput
+                      className={css.lastNameRoot}
+                      type="text"
+                      id={formId ? `${formId}.lname` : 'lname'}
+                      name="lname"
+                      autoComplete="family-name"
+                      label={intl.formatMessage({
+                        id: 'SignupForm.lastNameLabel',
+                      })}
+                      placeholder={intl.formatMessage({
+                        id: 'SignupForm.lastNamePlaceholder',
+                      })}
+                      validate={validators.required(
+                        intl.formatMessage({
+                          id: 'SignupForm.lastNameRequired',
+                        })
+                      )}
+                    />
+                  </div>
 
                   <FieldTextInput
-                    // className={css.lastNameRoot}
-                    type="number"
-                    id={formId ? `${formId}.crewSize` : 'crewSize'}
-                    name="crewSize"
+                    className={css.password}
+                    type="password"
+                    id={formId ? `${formId}.password` : 'password'}
+                    name="password"
+                    autoComplete="new-password"
                     label={intl.formatMessage({
-                      id: 'SignupForm.crewSizeLabel',
+                      id: 'SignupForm.passwordLabel',
                     })}
                     placeholder={intl.formatMessage({
-                      id: 'SignupForm.companyNamePlaceholder',
+                      id: 'SignupForm.passwordPlaceholder',
                     })}
+                    validate={passwordValidators}
                   />
-                  <FieldCheckboxGroup
-                    className={css.customField}
-                    name="systemExpertise"
-                    id={formId ? `${formId}.systemExpertise` : "systemExpertise"}
-                    label={intl.formatMessage({
-                      id: 'SignupForm.productsOrServicesLabel',
-                    })}
-                    options={systemExpertiseOption.map(optionConfig => ({
-                      key: optionConfig.option,
-                      label: optionConfig.label,
-                    }))}
-                  />
-
                 </div>
-
-              }
-              {userType == INSTALLER ? null : <FieldLocationAutocompleteInput
-                rootClassName={css.locationAddress}
-                inputClassName={css.locationAutocompleteInput}
-                iconClassName={css.locationAutocompleteInputIcon}
-                predictionsClassName={css.predictionsRoot}
-                validClassName={css.validLocation}
-                // autoFocus={autoFocus}
-                name="yardLocations"
-                label={intl.formatMessage({ id: 'SignupForm.yardAddressLabel' })}
-                placeholder={intl.formatMessage({
-                  id: 'EditListingLocationForm.addressPlaceholder',
-                })}
-                useDefaultPredictions={false}
-                format={identity}
-                valueFromForm={values.yardLocations}
-                validate={validators.composeValidators(
-                  validators.autocompleteSearchRequired(addressRequiredMessage),
-                  validators.autocompletePlaceSelected(addressNotRecognizedMessage)
-                )}
-              />}
-
-              {userType === BUYER && <div>
-                <FieldSelect
-                  className={css.customField}
-                  name="UrgencyLevel"
-                  id={formId ? `${formId}.${"UrgencyLevel"}` : "UrgencyLevel"}
-                  label={intl.formatMessage({
-                    id: 'SignupForm.UrgencyLevelLabel',
-                  })}
-                // placeholder={intl.formatMessage({
-                //   id: 'SignupForm.companyNamePlaceholder',
-                // })}
-                // {...validateMaybe}
-                >
-                  <option disabled value="">
-                    {"Select urgency"}
-                  </option>
-                  {urgencyLevelOption.map(optionConfig => {
-                    const key = optionConfig.key;
-                    return (
-                      <option key={key} value={key}>
-                        {optionConfig.label}
-                      </option>
-                    );
-                  })}
-                </FieldSelect>
-
-
-                <FieldSelect
-                  className={css.customField}
-                  name="canwehelp"
-                  id={formId ? `${formId}.${"canwehelp"}` : "canwehelp"}
-                  label={intl.formatMessage({
-                    id: 'SignupForm.canwehelpLabel',
-                  })}
-                // placeholder={intl.formatMessage({
-                //   id: 'SignupForm.companyNamePlaceholder',
-                // })}
-                // {...validateMaybe}
-                >
-                  <option disabled value="">
-                    {"Select help"}
-                  </option>
-                  {canwehelpOption.map(optionConfig => {
-                    const key = optionConfig.key;
-                    return (
-                      <option key={key} value={key}>
-                        {optionConfig.label}
-                      </option>
-                    );
-                  })}
-                </FieldSelect>
-              </div>
-              }
-
-              {userType == DEALER &&
-                <FieldSelect
-                  className={css.customField}
-                  name="productService"
-                  id={formId ? `${formId}.${"productService"}` : "productService"}
-                  label={intl.formatMessage({
-                    id: 'SignupForm.productsOrServicesLabel',
-                  })}
-                // placeholder={intl.formatMessage({
-                //   id: 'SignupForm.companyNamePlaceholder',
-                // })}
-                // {...validateMaybe}
-                >
-                  <option disabled value="">
-                    {"Select product or service"}
-                  </option>
-                  {productORServices.map(optionConfig => {
-                    const key = optionConfig.key;
-                    return (
-                      <option key={key} value={key}>
-                        {optionConfig.label}
-                      </option>
-                    );
-                  })}
-                </FieldSelect>}
-
-              {userType == DEALER &&
-
-                <div>
-                  <Field
-                    accept={ACCEPT_IMAGES}
-                    id="profileImage"
-                    name="profileImage"
+                <div className={css.userTypeContainer}>
+                  <FieldSelect
+                    className={css.userTypeDropdown}
+                    name="userType"
+                    id={formId ? `${formId}.userType` : "userType"}
                     label={intl.formatMessage({
-                      id: 'SignupForm.profileImageLabel',
+                      id: 'SignupForm.userTypeLabel',
                     })}
-                    type="file"
-                    formId={null}
-                    uploadImageError={uploadImageError}
-                    disabled={uploadInProgress}
+                    validate={validators.required(
+                      intl.formatMessage({
+                        id: 'SignupForm.userTypeRequired',
+                      })
+                    )}
                   >
-                    {fieldProps => {
-                      const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
-                      const { name, type } = input;
-                      const onChange = e => {
-                        const file = e.target.files[0];
-                        formId.change(`profileImage`, file);
-                        formId.blur(`profileImage`);
-                        if (file != null) {
-                          const tempId = `${file.name}_${Date.now()}`;
-                          onImageUpload({ id: tempId, file });
-                        }
-                      };
+                    <option disabled value="">
+                      {intl.formatMessage({
+                        id: 'SignupForm.selectUserType',
+                      })}
+                    </option>
+                    {userTypes.map(userTypeConfig => (
+                      <option key={userTypeConfig.userType} value={userTypeConfig.userType}>
+                        {userTypeConfig.label || userTypeConfig.userType}
+                      </option>
+                    ))}
+                  </FieldSelect>
 
-                      const handleRemoveImage = () => {
-                        onRemoveImage();
-                        formId.change(`profileImage`, null);
-                        formId.blur(`profileImage`);
+                  {userType && (
+                    <button
+                      type="button"
+                      className={css.nextButton}
+                      onClick={() => setShowRoleFields(true)}
+                    >
+                      <FormattedMessage id="SignupForm.next" />
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
 
-                        if (previewUrl) {
-                          URL.revokeObjectURL(previewUrl);
-                        }
+            {userType && showRoleFields && (
+              <div className={css.roleFieldsContainer}>
+                <div className={css.roleFieldsHeader}>
+                  <h3 className={css.roleTitle}>
+                    <FormattedMessage
+                      id={`SignupForm.${userType}FieldsTitle`}
+                      defaultMessage={`${userType} Information`}
+                    />
+                  </h3>
+                  <button
+                    type="button"
+                    className={css.backButton}
+                    onClick={() => setShowRoleFields(false)}
+                  >
+                    <FormattedMessage id="SignupForm.back" />
+                  </button>
+                </div>
 
-                        // Reset file input
-                        const fileInput = document.getElementById(id);
-                        if (fileInput) {
-                          fileInput.value = '';
-                        }
-                      };
+                <div className={css.tabContent}>
+                  {userType && (
+                    <div className={css.roleSpecificFields}>
+                      {/* Common fields for all roles */}
+                      <FieldTextInput
+                        type="text"
+                        id={formId ? `${formId}.companyName` : 'companyName'}
+                        name="companyName"
+                        label={intl.formatMessage({
+                          id: 'SignupForm.companyNameLabel',
+                        })}
+                        placeholder={intl.formatMessage({
+                          id: 'SignupForm.companyNamePlaceholder',
+                        })}
+                        validate={validators.required(
+                          intl.formatMessage({
+                            id: 'SignupForm.companyNameRequired',
+                          })
+                        )}
+                      />
 
-                      let error = null;
+                      <FieldLocationAutocompleteInput
+                        rootClassName={css.locationAddress}
+                        inputClassName={css.locationAutocompleteInput}
+                        iconClassName={css.locationAutocompleteInputIcon}
+                        predictionsClassName={css.predictionsRoot}
+                        validClassName={css.validLocation}
+                        name="headquarterAddress"
+                        label={intl.formatMessage({
+                          id: userType === BUYER ? "SignupForm.companyAddressLabel" : 'SignupForm.headquarterAddressLabel'
+                        })}
+                        placeholder={intl.formatMessage({
+                          id: 'EditListingLocationForm.addressPlaceholder',
+                        })}
+                        useDefaultPredictions={false}
+                        format={identity}
+                        valueFromForm={values.headquarterAddress}
+                        validate={validators.composeValidators(
+                          validators.autocompleteSearchRequired(addressRequiredMessage),
+                          validators.autocompletePlaceSelected(addressNotRecognizedMessage)
+                        )}
+                      />
 
-                      if (isUploadImageOverLimitError(uploadImageError)) {
-                        error = (
-                          <div className={css.error}>
-                            <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
-                          </div>
-                        );
-                      } else if (uploadImageError) {
-                        error = (
-                          <div className={css.error}>
-                            <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
-                          </div>
-                        );
-                      }
+                      <UserFieldPhoneNumber
+                        formName="SignupForm"
+                        className={css.row}
+                        userTypeConfig={userTypeConfig}
+                        intl={intl}
+                      />
 
-                      return (
-                        <div className={css.uploadAvatarWrapper}>
-                          <label className={css.label} htmlFor={id}>
-                            {label}
-                          </label>
+                      {userType === BUYER && (
+                        <div className={css.buyerFields}>
+                          <FieldSelect
+                            className={css.customField}
+                            name="UrgencyLevel"
+                            id={formId ? `${formId}.UrgencyLevel` : "UrgencyLevel"}
+                            label={intl.formatMessage({
+                              id: 'SignupForm.UrgencyLevelLabel',
+                            })}
+                          >
+                            <option disabled value="">
+                              {"Select urgency"}
+                            </option>
+                            {urgencyLevelOption?.map(optionConfig => (
+                              <option key={optionConfig.key} value={optionConfig.key}>
+                                {optionConfig.label}
+                              </option>
+                            ))}
+                          </FieldSelect>
 
-                          {/* File input */}
-                          {!previewUrl && <input
-                            accept={accept}
-                            id={id}
-                            name={name}
-                            className={css.uploadAvatarInput}
-                            disabled={disabled}
-                            onChange={onChange}
-                            type={type}
-                          />}
+                          <FieldSelect
+                            className={css.customField}
+                            name="canwehelp"
+                            id={formId ? `${formId}.canwehelp` : "canwehelp"}
+                            label={intl.formatMessage({
+                              id: 'SignupForm.canwehelpLabel',
+                            })}
+                          >
+                            <option disabled value="">
+                              {"Select help"}
+                            </option>
+                            {canwehelpOption?.map(optionConfig => (
+                              <option key={optionConfig.key} value={optionConfig.key}>
+                                {optionConfig.label}
+                              </option>
+                            ))}
+                          </FieldSelect>
+                        </div>
+                      )}
 
-                          {/* Image Preview */}
-                          {previewUrl && (
-                            <div className={css.imagePreviewContainer}>
-                              <div className={css.previewWrapper}>
-                                <img
-                                  src={previewUrl}
-                                  alt="Profile preview"
-                                  className={css.previewImage}
-                                  onLoad={() => {
-                                    if (!uploadInProgress) {
-                                      URL.revokeObjectURL(previewUrl);
-                                    }
-                                  }}
-                                />
+                      {userType === DEALER && (
+                        <div className={css.dealerFields}>
+                          <FieldSelect
+                            className={css.customField}
+                            name="productService"
+                            id={formId ? `${formId}.productService` : "productService"}
+                            label={intl.formatMessage({
+                              id: 'SignupForm.productsOrServicesLabel',
+                            })}
+                          >
+                            <option disabled value="">
+                              {"Select product or service"}
+                            </option>
+                            {productORServices?.map(optionConfig => (
+                              <option key={optionConfig.key} value={optionConfig.key}>
+                                {optionConfig.label}
+                              </option>
+                            ))}
+                          </FieldSelect>
 
-                                {/* Remove Image button */}
+                          <FieldLocationAutocompleteInput
+                            rootClassName={css.locationAddress}
+                            inputClassName={css.locationAutocompleteInput}
+                            iconClassName={css.locationAutocompleteInputIcon}
+                            predictionsClassName={css.predictionsRoot}
+                            validClassName={css.validLocation}
+                            name="yardLocations"
+                            label={intl.formatMessage({ id: 'SignupForm.yardAddressLabel' })}
+                            placeholder={intl.formatMessage({
+                              id: 'EditListingLocationForm.addressPlaceholder',
+                            })}
+                            useDefaultPredictions={false}
+                            format={identity}
+                            valueFromForm={values.yardLocations}
+                            validate={validators.composeValidators(
+                              validators.autocompleteSearchRequired(addressRequiredMessage),
+                              validators.autocompletePlaceSelected(addressNotRecognizedMessage)
+                            )}
+                          />
+
+                          {!showCompanyDetails && (
+                            <button
+                              type="button"
+                              className={css.nextButton}
+                              onClick={() => setShowCompanyDetails(true)}
+                            >
+                              <FormattedMessage id="SignupForm.next" />
+                            </button>
+                          )}
+                          {showCompanyDetails && (
+                            <div className={css.companyDetailsSection}>
+                              <div className={css.sectionHeader}>
+                                <h4 className={css.sectionTitle}>
+                                  <FormattedMessage id="SignupForm.companyDetailsTitle" defaultMessage="Company Details" />
+                                </h4>
                                 <button
                                   type="button"
-                                  onClick={handleRemoveImage}
-                                  className={css.removeButton}
+                                  className={css.backButton}
+                                  onClick={() => setShowCompanyDetails(false)}
                                 >
-                                  <IconCollection iconName='crossIcon' />
+                                  <FormattedMessage id="SignupForm.back" />
                                 </button>
-
-                                {uploadInProgress && (
-                                  <div className={css.uploadSuccess}>
-                                    <FormattedMessage id="SignupForm.imageUploaded" />
-                                  </div>
-                                )}
                               </div>
+
+                              <Field
+                                accept={ACCEPT_IMAGES}
+                                id="profileImage"
+                                name="profileImage"
+                                label={intl.formatMessage({
+                                  id: 'SignupForm.profileImageLabel',
+                                })}
+                                type="file"
+                                formId={null}
+                                uploadImageError={uploadImageError}
+                                disabled={uploadInProgress}
+                              >
+                                {fieldProps => {
+                                  const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
+                                  const { name, type } = input;
+                                  const onChange = e => {
+                                    const file = e.target.files[0];
+                                    formRenderProps.form.change(`profileImage`, file);
+                                    formRenderProps.form.blur(`profileImage`);
+                                    if (file != null) {
+                                      const tempId = `${file.name}_${Date.now()}`;
+                                      onImageUpload({ id: tempId, file });
+                                    }
+                                  };
+
+                                  const handleRemoveImage = () => {
+                                    onRemoveImage();
+                                    formRenderProps.form.change(`profileImage`, null);
+                                    formRenderProps.form.blur(`profileImage`);
+
+                                    if (previewUrl) {
+                                      URL.revokeObjectURL(previewUrl);
+                                    }
+
+                                    const fileInput = document.getElementById(id);
+                                    if (fileInput) {
+                                      fileInput.value = '';
+                                    }
+                                  };
+
+                                  let error = null;
+
+                                  if (isUploadImageOverLimitError(uploadImageError)) {
+                                    error = (
+                                      <div className={css.error}>
+                                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
+                                      </div>
+                                    );
+                                  } else if (uploadImageError) {
+                                    error = (
+                                      <div className={css.error}>
+                                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div className={css.uploadAvatarWrapper}>
+                                      <label className={css.label} htmlFor={id}>
+                                        {label}
+                                      </label>
+
+                                      {!previewUrl && (
+                                        <input
+                                          accept={accept}
+                                          id={id}
+                                          name={name}
+                                          className={css.uploadAvatarInput}
+                                          disabled={disabled}
+                                          onChange={onChange}
+                                          type={type}
+                                        />
+                                      )}
+
+                                      {previewUrl && (
+                                        <div className={css.imagePreviewContainer}>
+                                          <div className={css.previewWrapper}>
+                                            <img
+                                              src={previewUrl}
+                                              alt="Profile preview"
+                                              className={css.previewImage}
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={handleRemoveImage}
+                                              className={css.removeButton}
+                                            >
+                                              <IconCollection iconName='crossIcon' />
+                                            </button>
+                                            {uploadInProgress && (
+                                              <div className={css.uploadSuccess}>
+                                                <FormattedMessage id="SignupForm.imageUploaded" />
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {error}
+                                    </div>
+                                  );
+                                }}
+                              </Field>
+
+                              <FieldTextInput
+                                type="text"
+                                id={formId ? `${formId}.companyWebsite` : 'companyWebsite'}
+                                name="companyWebsite"
+                                label={intl.formatMessage({
+                                  id: 'SignupForm.companyWebsiteLabel',
+                                })}
+                                placeholder={intl.formatMessage({
+                                  id: 'SignupForm.companyNamePlaceholder',
+                                })}
+                              />
+
+                              <FieldTextInput
+                                type="url"
+                                name="socialMediaUrl"
+                                id={formId ? `${formId}.socialMediaUrl` : 'socialMediaUrl'}
+                                label={intl.formatMessage({
+                                  id: 'SignupForm.socialMediaLabel',
+                                })}
+                                placeholder={intl.formatMessage({
+                                  id: 'BusinessProfileForm.instagramUrlPlaceholder',
+                                })}
+                              />
                             </div>
                           )}
-
-                          {error}
                         </div>
-                      );
-                    }}
-                  </Field>
+                      )}
 
-                  <FieldTextInput
-                    // className={css.lastNameRoot}
-                    type="text"
-                    id={formId ? `${formId}.companyWebsite` : 'companyWebsite'}
-                    name="companyWebsite"
-                    label={intl.formatMessage({
-                      id: 'SignupForm.companyWebsiteLabel',
-                    })}
-                    placeholder={intl.formatMessage({
-                      id: 'SignupForm.companyNamePlaceholder',
-                    })}
-                  />
+                      {userType === INSTALLER && (
+                        <div className={css.installerFields}>
+                          <FieldCheckboxGroup
+                            className={css.customField}
+                            name="serviceRegions"
+                            id={formId ? `${formId}.serviceRegions` : "serviceRegions"}
+                            label={intl.formatMessage({
+                              id: 'SignupForm.productsOrServicesLabel',
+                            })}
+                            options={serviceRegionsOption?.map(optionConfig => ({
+                              key: optionConfig.option,
+                              label: optionConfig.label,
+                            }))}
+                          />
 
-                  <FieldTextInput
-                    type="url"
-                    name="socialMediaUrl"
-                    id={formId ? `${formId}.socialMediaUrl` : 'socialMediaUrl'}
-                    label={intl.formatMessage({
-                      id: 'SignupForm.socialMediaLabel',
-                    })}
-                    placeholder={intl.formatMessage({
-                      id: 'BusinessProfileForm.instagramUrlPlaceholder',
-                    })}
-                  />
+                          <FieldTextInput
+                            type="number"
+                            id={formId ? `${formId}.crewSize` : 'crewSize'}
+                            name="crewSize"
+                            label={intl.formatMessage({
+                              id: 'SignupForm.crewSizeLabel',
+                            })}
+                            placeholder={intl.formatMessage({
+                              id: 'SignupForm.companyNamePlaceholder',
+                            })}
+                          />
 
+                          <FieldCheckboxGroup
+                            className={css.customField}
+                            name="systemExpertise"
+                            id={formId ? `${formId}.systemExpertise` : "systemExpertise"}
+                            label={intl.formatMessage({
+                              id: 'SignupForm.productsOrServicesLabel',
+                            })}
+                            options={systemExpertiseOption?.map(optionConfig => ({
+                              key: optionConfig.option,
+                              label: optionConfig.label,
+                            }))}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              }
+              </div>
+            )}
 
-
-            </div> : null}
-
-          {/* {showCustomUserFields ? (
-            <div className={css.customFields}>
-              {userFieldProps.map(({ key, ...fieldProps }) => (
-                <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-              ))}
+            <div className={css.bottomWrapper}>
+              {termsAndConditions}
+              {showRoleFields && (userType !== DEALER || showCompanyDetails) && (
+                <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+                  <FormattedMessage id="SignupForm.signUp" />
+                </PrimaryButton>
+              )}
             </div>
-          ) : null} */}
-
-          <div className={css.bottomWrapper}>
-            {termsAndConditions}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="SignupForm.signUp" />
-            </PrimaryButton>
-          </div>
-        </Form>
-      );
-    }}
-  />
-);
+          </Form>
+        );
+      }}
+    />
+  );
+};
 
 /**
  * A component that renders the signup form.
