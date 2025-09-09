@@ -177,6 +177,7 @@ export const AuthenticationForms = props => {
     previewUrl,
     uploadProfileImage
   } = props;
+  const [progressPercent, setProgressPercent] = useState(30);
   const config = useConfiguration();
   const intl = useIntl();
   const { userFields, userTypes = [] } = config.user;
@@ -298,7 +299,7 @@ console.log('yardLocations', yardLocations)
   return (
     <div className={css.content}>
       {!isLogin && <div className={css.progressWrapper}>
-        <div className={css.progress} style={{ width: "30%" }} />
+        <div className={css.progress} style={{ width: `${progressPercent}%` }} />
       </div>}
       <LinkTabNavHorizontal className={css.tabs} tabs={tabs} ariaLabel={ariaLabel} />
       {loginOrSignupError}
@@ -322,6 +323,7 @@ console.log('yardLocations', yardLocations)
           onImageUpload={onImageUpload}
           onRemoveImage={onRemoveImage}
           previewUrl={previewUrl}
+          onProgressChange={setProgressPercent}
         />
       )}
 

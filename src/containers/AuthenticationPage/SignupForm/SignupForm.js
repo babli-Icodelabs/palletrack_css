@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -29,6 +29,21 @@ const SignupFormComponent = props => {
   const [showCompanyDetails, setShowCompanyDetails] = useState(false);
   const [currentTab, setCurrentTab] = useState('initial');
   const [tab1DataShown, setTab1DataShown] = useState(false);
+  const onProgressChange = props.onProgressChange;
+
+  useEffect(() => {
+    if (typeof onProgressChange === 'function') {
+      let percent = 30;
+      if (currentTab === 'tab1') {
+        percent = 60;
+        // Buyers finish at this step
+        // eslint-disable-next-line no-undef
+      } else if (currentTab === 'companyDetails') {
+        percent = 90;
+      }
+      onProgressChange(percent);
+    }
+  }, [currentTab, onProgressChange]);
 
   return (
     <FinalForm
@@ -236,7 +251,7 @@ const SignupFormComponent = props => {
                 type="button"
                 className={css.nextButton}
                 onClick={() => setCurrentTab('tab1')}
-                disabled={!userType && !termsAndConditions}
+                disabled={invalid || !userType || submitInProgress}
               >
                 <FormattedMessage id="SignupForm.next" />
               </Button>
@@ -383,14 +398,15 @@ const SignupFormComponent = props => {
                           validators.autocompletePlaceSelected(addressNotRecognizedMessage)
                         )}
                       />
-
-                      <button
+                      <div />
+                      <Button
                         type="button"
                         className={css.nextButton}
                         onClick={() => setCurrentTab('companyDetails')}
+                        disabled={invalid || submitInProgress}
                       >
                         <FormattedMessage id="SignupForm.next" />
-                      </button>
+                      </Button>
                     </div>
                   )}
 
@@ -408,13 +424,14 @@ const SignupFormComponent = props => {
                           label: optionConfig.label,
                         }))}
                       />
-                           <button
+                      <Button
                         type="button"
                         className={css.nextButton}
                         onClick={() => setCurrentTab('companyDetails')}
+                        disabled={invalid || submitInProgress}
                       >
                         <FormattedMessage id="SignupForm.next" />
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -424,9 +441,9 @@ const SignupFormComponent = props => {
         );
 
         const renderCompanyDetailsTab = () => (
-          <div className={css.companyDetailsSection}>
+          <div className={css.roleSpecificFields}>
             {userType === INSTALLER && (
-              <div className={css.installerFields}>
+              <div className={css.roleSpecificFields}>
 
 
                 <FieldTextInput
@@ -455,7 +472,7 @@ const SignupFormComponent = props => {
                 />
               </div>
             )}
-        {  userType === DEALER &&  <div>
+            {userType === DEALER && <div className={css.roleSpecificFields}>
               <Field
                 accept={ACCEPT_IMAGES}
                 id="profileImage"
@@ -519,15 +536,27 @@ const SignupFormComponent = props => {
                       </label>
 
                       {!previewUrl && (
-                        <input
-                          accept={accept}
-                          id={id}
-                          name={name}
-                          className={css.uploadAvatarInput}
-                          disabled={disabled}
-                          onChange={onChange}
-                          type={type}
-                        />
+                        <div>
+                          <input
+                            accept={accept}
+                            id={id}
+                            name={name}
+                            className={css.uploadAvatarInput}
+                            disabled={disabled}
+                            onChange={onChange}
+                            type={type}
+                          />
+                          <label className={css.uploadButton} htmlFor={id}>
+                            <span className={css.uploadIcon} aria-hidden="true">
+                              <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.2199 20.8126H5.77994C5.43316 20.7984 5.09256 20.716 4.77765 20.5701C4.46274 20.4242 4.17969 20.2176 3.9447 19.9622C3.70971 19.7068 3.52739 19.4075 3.40818 19.0816C3.28896 18.7556 3.23519 18.4093 3.24994 18.0626V15.0626C3.24994 14.8637 3.32896 14.6729 3.46961 14.5322C3.61027 14.3916 3.80103 14.3126 3.99994 14.3126C4.19886 14.3126 4.38962 14.3916 4.53027 14.5322C4.67093 14.6729 4.74994 14.8637 4.74994 15.0626V18.0626C4.72412 18.3595 4.81359 18.655 4.99977 18.8877C5.18596 19.1204 5.45459 19.2726 5.74994 19.3126H18.2199C18.5153 19.2726 18.7839 19.1204 18.9701 18.8877C19.1563 18.655 19.2458 18.3595 19.2199 18.0626V15.0626C19.2199 14.8637 19.299 14.6729 19.4396 14.5322C19.5803 14.3916 19.771 14.3126 19.9699 14.3126C20.1689 14.3126 20.3596 14.3916 20.5003 14.5322C20.6409 14.6729 20.7199 14.8637 20.7199 15.0626V18.0626C20.7499 18.7579 20.504 19.437 20.0358 19.952C19.5676 20.467 18.915 20.7763 18.2199 20.8126ZM15.9999 8.81257C15.9014 8.81304 15.8038 8.79382 15.7128 8.75604C15.6217 8.71826 15.5392 8.66268 15.4699 8.59257L11.9999 5.12257L8.52994 8.59257C8.38777 8.72505 8.19972 8.79718 8.00542 8.79375C7.81112 8.79032 7.62573 8.71161 7.48832 8.57419C7.35091 8.43678 7.2722 8.2514 7.26877 8.0571C7.26534 7.86279 7.33746 7.67475 7.46994 7.53257L11.4699 3.53257C11.6106 3.39212 11.8012 3.31323 11.9999 3.31323C12.1987 3.31323 12.3893 3.39212 12.5299 3.53257L16.5299 7.53257C16.6704 7.6732 16.7493 7.86382 16.7493 8.06257C16.7493 8.26132 16.6704 8.45195 16.5299 8.59257C16.4607 8.66268 16.3781 8.71826 16.2871 8.75604C16.1961 8.79382 16.0985 8.81304 15.9999 8.81257Z" fill="#4A4A4A" />
+                                <path d="M12 15.8125C11.8019 15.8099 11.6126 15.7301 11.4725 15.59C11.3324 15.4499 11.2526 15.2606 11.25 15.0625V4.0625C11.25 3.86359 11.329 3.67282 11.4697 3.53217C11.6103 3.39152 11.8011 3.3125 12 3.3125C12.1989 3.3125 12.3897 3.39152 12.5303 3.53217C12.671 3.67282 12.75 3.86359 12.75 4.0625V15.0625C12.7474 15.2606 12.6676 15.4499 12.5275 15.59C12.3874 15.7301 12.1981 15.8099 12 15.8125Z" fill="#4A4A4A" />
+                              </svg>
+
+                            </span>
+                            Upload logo
+                          </label>
+                        </div>
                       )}
 
                       {previewUrl && (
