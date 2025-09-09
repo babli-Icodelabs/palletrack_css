@@ -69,7 +69,8 @@ const SignupFormComponent = props => {
           uploadInProgress,
           onImageUpload,
           onRemoveImage,
-          previewUrl
+          previewUrl,
+          signupError
         } = formRenderProps;
         const { userType } = values || {};
 
@@ -146,6 +147,20 @@ const SignupFormComponent = props => {
         const classes = classNames(rootClassName || css.root, className);
         const submitInProgress = inProgress;
         const submitDisabled = invalid || submitInProgress;
+
+        // Function to handle going back to previous tab
+        const handleGoBack = () => {
+          switch (currentTab) {
+            case 'tab1':
+              setCurrentTab('initial');
+              break;
+            case 'companyDetails':
+              setCurrentTab('tab1');
+              break;
+            default:
+              setCurrentTab('initial');
+          }
+        };
 
         // Switch case function to handle tab display
         const renderTabContent = () => {
@@ -251,7 +266,7 @@ const SignupFormComponent = props => {
                 type="button"
                 className={css.nextButton}
                 onClick={() => setCurrentTab('tab1')}
-                disabled={invalid || !userType || submitInProgress}
+                disabled={invalid || !userType}
               >
                 <FormattedMessage id="SignupForm.next" />
               </Button>
@@ -262,7 +277,13 @@ const SignupFormComponent = props => {
 
         const renderRoleFieldsTab = () => (
           <div className={css.roleFieldsContainer}>
-
+            {signupError && <Button
+              type="button"
+              className={css.backButton}
+              onClick={handleGoBack}
+            >
+              <FormattedMessage id="SignupForm.back" />
+            </Button>}
 
             <div className={css.tabContent}>
               {userType && (
@@ -403,7 +424,7 @@ const SignupFormComponent = props => {
                         type="button"
                         className={css.nextButton}
                         onClick={() => setCurrentTab('companyDetails')}
-                        disabled={invalid || submitInProgress}
+                      // disabled={invalid || submitInProgress}
                       >
                         <FormattedMessage id="SignupForm.next" />
                       </Button>
@@ -442,6 +463,13 @@ const SignupFormComponent = props => {
 
         const renderCompanyDetailsTab = () => (
           <div className={css.roleSpecificFields}>
+            {signupError && <Button
+              type="button"
+              className={css.backButton}
+              onClick={handleGoBack}
+            >
+              <FormattedMessage id="SignupForm.back" />
+            </Button>}
             {userType === INSTALLER && (
               <div className={css.roleSpecificFields}>
 

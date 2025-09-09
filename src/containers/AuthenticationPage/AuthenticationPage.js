@@ -221,7 +221,7 @@ export const AuthenticationForms = props => {
     const {
       selectedPlace: { address, origin },
     } = headquarterAddress;
-console.log('yardLocations', yardLocations)
+
     // const {
     //   selectedPlace: { yardAddress:address , origin: yardOrgin },
     // } = yardLocations
@@ -316,6 +316,7 @@ console.log('yardLocations', yardLocations)
           userTypes={userTypes}
           userFields={userFields}
           image={image}
+          signupError={signupError}
           uploadImageError={uploadImageError}
           uploadInProgress={uploadInProgress}
           updateInProgress={updateInProgress}
