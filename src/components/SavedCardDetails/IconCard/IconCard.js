@@ -10,7 +10,7 @@ const BRAND_JCB = 'jcb';
 const BRAND_MASTERCARD = 'mastercard';
 const BRAND_UNIONPAY = 'unionpay';
 const BRAND_VISA = 'visa';
-
+const ICON_HEART = 'heart';
 /**
  * Payment card icon.
  *
@@ -22,9 +22,8 @@ const BRAND_VISA = 'visa';
  * @returns {JSX.Element} SVG icon
  */
 const IconCard = props => {
-  const { className, rootClassName, brand = 'default' } = props;
+  const { className, rootClassName, brand = 'default', filled = false } = props;
   const classes = classNames(rootClassName || css.root, className);
-
   switch (brand) {
     case BRAND_AMEX:
       return (
@@ -232,6 +231,41 @@ const IconCard = props => {
               fill="#171E6C"
             />
           </g>
+        </svg>
+      );
+    case ICON_HEART:
+      return filled ? (
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 30 30"
+          fill="#F06F2A"  // this is used as default fill for the path
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12.5125 24.5848C8.9875 21.9473 2 15.9185 2 10.4923C2 6.90726 4.63125 3.99976 8.25 3.99976C10.125 3.99976 12 4.62476 14.5 7.12476C17 4.62476 18.875 3.99976 20.75 3.99976C24.3687 3.99976 27 6.90726 27 10.4923C27 15.9173 20.0125 21.9473 16.4875 24.5848C15.3 25.4723 13.7 25.4723 12.5125 24.5848Z"
+            fill="#F06F2A"   // <-- make sure path itself is filled
+            stroke="#F06F2A" // optional if you still want the outline
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : (
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 30 30"
+          fill="#F06F2A"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12.5125 24.5848C8.9875 21.9473 2 15.9185 2 10.4923C2 6.90726 4.63125 3.99976 8.25 3.99976C10.125 3.99976 12 4.62476 14.5 7.12476C17 4.62476 18.875 3.99976 20.75 3.99976C24.3687 3.99976 27 6.90726 27 10.4923C27 15.9173 20.0125 21.9473 16.4875 24.5848C15.3 25.4723 13.7 25.4723 12.5125 24.5848Z"
+            stroke="#F06F2A"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       );
     default:

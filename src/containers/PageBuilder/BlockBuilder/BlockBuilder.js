@@ -1,10 +1,15 @@
 import React from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 // Block components
 import BlockDefault from './BlockDefault';
 import BlockFooter from './BlockFooter';
 import BlockSocialMediaLink from './BlockSocialMediaLink';
 import { Button } from '../../../components';
+import { createResourceLocatorString } from '../../../util/routes';
+import { useRouteConfiguration } from '../../../context/routeConfigurationContext';
 
 ///////////////////////////////////////////
 // Mapping of block types and components //
@@ -59,7 +64,10 @@ const defaultBlockComponents = {
  * @returns {JSX.Element} containing form that allows adding availability exceptions
  */
 const BlockBuilder = props => {
-  const { blocks = [], sectionId, options, ...otherProps } = props;
+  const { blocks = [], sectionId, options, history, isAuthenticated, ...otherProps } = props;
+
+  const routeConfiguration = useRouteConfiguration();
+
 
   // Extract block & field component mappings from props
   // If external mapping has been included for fields
@@ -74,6 +82,49 @@ const BlockBuilder = props => {
     return null;
   }
 
+  // Handle button click based on authentication status
+  const handleButtonClick = (action) => {
+    if (!isAuthenticated) {
+      // Redirect unauthenticated users to signup
+      const signupPath = createResourceLocatorString('SignupPage', routeConfiguration, {}, {});
+      history.push(signupPath);
+      return;
+    }
+
+    let path = '';
+
+    switch (action) {
+      case 'list':
+      case 'sell':
+        path = createResourceLocatorString('EditListingPage', routeConfiguration, {
+          slug: 'slug',
+          id: '000-000-000',
+          type: 'new',
+          tab: 'details',
+        }, {});
+        break;
+
+      case 'search':
+      case 'find': // if find should also go to search
+        path = createResourceLocatorString('SearchPage', routeConfiguration, {}, {});
+        break;
+
+      case 'connect':
+        path = createResourceLocatorString('InboxPage', routeConfiguration, { tab: 'orders' }, {});
+        break;
+
+      case 'buy':
+        path = createResourceLocatorString('CartPage', routeConfiguration, {}, {});
+        break;
+
+      default:
+        path = '/'; // fallback route
+    }
+
+    history.push(path);
+  };
+
+
   // Selection of Block components
   // Combine component-mapping from props together with the default one:
   const components = { ...defaultBlockComponents, ...blockComponents };
@@ -86,18 +137,18 @@ const BlockBuilder = props => {
         const blockId = block.blockId || `${sectionId}-block-${index + 1}`;
         if (blockId === 'three_steps-block-2') {
           return (
-            <div>
-              <Button>SEARCH</Button>
-              <Button>FIND</Button>
-              <Button>BUY</Button>
+            <div key={`${blockId}_i${index}`}>
+              <Button type="button" onClick={() => handleButtonClick('search')}>SEARCH</Button>
+              <Button type="button" onClick={() => handleButtonClick('find')}>FIND</Button>
+              <Button type="button" onClick={() => handleButtonClick('buy')}>BUY</Button>
             </div>
           );
         } else if (blockId === 'three_steps-block-3') {
           return (
-            <div>
-              <Button>LIST</Button>
-              <Button>CONNECT</Button>
-              <Button>SELL</Button>
+            <div key={`${blockId}_i${index}`}>
+              <Button type="button" onClick={() => handleButtonClick('list')}>LIST</Button>
+              <Button type="button" onClick={() => handleButtonClick('connect')}>CONNECT</Button>
+              <Button type="button" onClick={() => handleButtonClick('sell')}>SELL</Button>
             </div>
           );
         } else if (Block) {
@@ -122,4 +173,16 @@ const BlockBuilder = props => {
   );
 };
 
-export default BlockBuilder;
+const mapStateToProps = state => {
+  const { isAuthenticated } = state.auth;
+  return { isAuthenticated };
+};
+
+// Note: it is important that the withRouter HOC is **outside** the
+// connect HOC, otherwise React Router won't rerender any Route
+// components since connect implements a shouldComponentUpdate
+// lifecycle hook.
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(BlockBuilder);

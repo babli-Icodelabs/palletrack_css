@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import { useIntl } from 'react-intl';
 import { bool, object } from 'prop-types';
@@ -15,15 +15,25 @@ import { ASSET_NAME } from './LandingPage.duck';
 
 import { manageDisableScrolling } from '../../ducks/ui.duck';
 import ContactUsForm from './ContactUsForm';
+import { fetchFeaturedListings } from '../../components/FeaturedListings/FeaturedListing.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
 
 export const LandingPageComponent = props => {
-  const { pageAssetsData, inProgress, error, onManageDisableScrolling } = props;
+  const { pageAssetsData, inProgress, error, onManageDisableScrolling, onFetchFeaturedListings, onFetchCurrentUser, isAuthenticated } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const intl = props.intl || useIntl();
+
+  useEffect(() => {
+    // Fetch featured listings once when landing mounts
+    onFetchFeaturedListings();
+    if (isAuthenticated) {
+      onFetchCurrentUser();
+    }
+  }, [isAuthenticated]);
 
   const handleOpen = () => setIsModalOpen(true);
 
@@ -74,12 +84,26 @@ LandingPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const { pageAssetsData, inProgress, error } = state.hostedAssets || {};
-  return { pageAssetsData, inProgress, error };
+  const { currentUser } = state.user;
+  const { listings: featuredListings, fetchInProgress: featuredInProgress, fetchError: featuredError } =
+    state.FeaturedPage || {};
+
+  return {
+    pageAssetsData,
+    inProgress,
+    error,
+    currentUser,
+    featuredListings,
+    featuredInProgress,
+    featuredError,
+  };
 };
 
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling))
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onFetchFeaturedListings: config => dispatch(fetchFeaturedListings(config)),
+  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
