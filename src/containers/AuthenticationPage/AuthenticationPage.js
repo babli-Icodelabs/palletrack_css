@@ -220,10 +220,10 @@ export const AuthenticationForms = props => {
     const {
       selectedPlace: { address, origin },
     } = headquarterAddress;
-
-    const {
-      selectedPlace: { address: yardAddress, origin: yardOrgin },
-    } = yardLocations
+console.log('yardLocations', yardLocations)
+    // const {
+    //   selectedPlace: { yardAddress:address , origin: yardOrgin },
+    // } = yardLocations
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
     const params = {
@@ -240,7 +240,7 @@ export const AuthenticationForms = props => {
         UrgencyLevel,
         canwehelp,
         serviceRegions,
-        yardLocations: { address: yardAddress, geolocation: yardOrgin },
+        // yardLocations: { address: yardAddress, geolocation: yardOrgin },
         headquarterAddress: { address, geolocation: origin },
         ...pickUserFieldsData(rest, 'public', userType, userFields),
       },
