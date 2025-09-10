@@ -122,9 +122,9 @@ const FeaturedListings = () => {
                     <path
                       d="M12.5125 24.5848C8.9875 21.9473 2 15.9185 2 10.4923C2 6.90726 4.63125 3.99976 8.25 3.99976C10.125 3.99976 12 4.62476 14.5 7.12476C17 4.62476 18.875 3.99976 20.75 3.99976C24.3687 3.99976 27 6.90726 27 10.4923C27 15.9173 20.0125 21.9473 16.4875 24.5848C15.3 25.4723 13.7 25.4723 12.5125 24.5848Z"
                       stroke="#F06F2A"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </button>

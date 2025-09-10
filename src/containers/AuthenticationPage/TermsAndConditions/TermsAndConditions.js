@@ -69,7 +69,7 @@ const TermsAndConditions = props => {
             key: 'tos-and-privacy',
             label: intl.formatMessage(
               { id: 'AuthenticationPage.termsAndConditionsAcceptText' },
-              { termsLink, privacyLink }
+              { termsLink }
             ),
           },
         ]}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -17,9 +17,11 @@ import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 import css from './SignupForm.module.css';
 import { isUploadImageOverLimitError } from '../../../util/errors';
 import { IconCollection } from '../../../components/IconCollection/IconCollection';
+import { checkUserAlreadyExist } from '../../../util/api';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // S
+const SIGNUP_FORM_STORAGE_KEY = 'signupFormData';
 
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
@@ -29,7 +31,63 @@ const SignupFormComponent = props => {
   const [showCompanyDetails, setShowCompanyDetails] = useState(false);
   const [currentTab, setCurrentTab] = useState('initial');
   const [tab1DataShown, setTab1DataShown] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [savedFormData, setSavedFormData] = useState({});
+  const [signupError, setSignupError] = useState(null);
+  const [checkingUser, setCheckingUser] = useState(false);
   const onProgressChange = props.onProgressChange;
+
+  // Local storage utility functions
+  const saveFormDataToStorage = useCallback((formData) => {
+    try {
+      const dataToSave = {
+        ...formData,
+        currentTab,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(SIGNUP_FORM_STORAGE_KEY, JSON.stringify(dataToSave));
+    } catch (error) {
+      console.warn('Failed to save form data to localStorage:', error);
+    }
+  }, [currentTab]);
+
+  const loadFormDataFromStorage = useCallback(() => {
+    try {
+      const savedData = localStorage.getItem(SIGNUP_FORM_STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Check if data is not older than 24 hours
+        const isDataFresh = parsedData.timestamp && (Date.now() - parsedData.timestamp) < 24 * 60 * 60 * 1000;
+        if (isDataFresh) {
+          const { timestamp, currentTab: savedTab, ...formData } = parsedData;
+          setCurrentTab(savedTab || 'initial');
+          return formData;
+        } else {
+          // Remove expired data
+          localStorage.removeItem(SIGNUP_FORM_STORAGE_KEY);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load form data from localStorage:', error);
+      localStorage.removeItem(SIGNUP_FORM_STORAGE_KEY);
+    }
+    return {};
+  }, []);
+
+  const clearFormDataFromStorage = useCallback(() => {
+    try {
+      localStorage.removeItem(SIGNUP_FORM_STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to clear form data from localStorage:', error);
+    }
+  }, []);
+
+  // Load saved form data on component mount
+  useEffect(() => {
+    const loadedData = loadFormDataFromStorage();
+    setSavedFormData(loadedData);
+    setIsLoaded(true);
+  }, [loadFormDataFromStorage]);
 
   useEffect(() => {
     if (typeof onProgressChange === 'function') {
@@ -45,11 +103,21 @@ const SignupFormComponent = props => {
     }
   }, [currentTab, onProgressChange]);
 
+  // Don't render the form until we've loaded the saved data
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+
+
   return (
     <FinalForm
       {...props}
       mutators={{ ...arrayMutators }}
-      initialValues={{ userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) }}
+      initialValues={{
+        userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes),
+        ...savedFormData
+      }}
       render={formRenderProps => {
         const {
           rootClassName,
@@ -70,8 +138,36 @@ const SignupFormComponent = props => {
           onImageUpload,
           onRemoveImage,
           previewUrl,
-          signupError
         } = formRenderProps;
+
+        // Save form data to localStorage whenever values change
+        useEffect(() => {
+          if (values && Object.keys(values).length > 0) {
+            // Only save if form has been interacted with (not just initial load)
+            const hasUserInput = Object.keys(values).some(key => {
+              const initialValue = savedFormData[key] || (key === 'userType' ? props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) : undefined);
+              return values[key] !== initialValue;
+            });
+
+            if (hasUserInput || Object.keys(savedFormData).length === 0) {
+              // Save all form data including password and profileImage
+              saveFormDataToStorage(values);
+            }
+          }
+        }, [values, saveFormDataToStorage, savedFormData, props.preselectedUserType, props.userTypes]);
+
+        // Enhanced handleSubmit to clear localStorage on successful signup
+        const enhancedHandleSubmit = async (formData) => {
+          try {
+            const result = await handleSubmit(formData);
+            // Clear localStorage on successful signup
+            clearFormDataFromStorage();
+            return result;
+          } catch (error) {
+            // Don't clear localStorage if signup fails
+            throw error;
+          }
+        };
         const { userType } = values || {};
 
         const addressRequiredMessage = intl.formatMessage({
@@ -147,7 +243,6 @@ const SignupFormComponent = props => {
         const classes = classNames(rootClassName || css.root, className);
         const submitInProgress = inProgress;
         const submitDisabled = invalid || submitInProgress;
-
         // Function to handle going back to previous tab
         const handleGoBack = () => {
           switch (currentTab) {
@@ -161,7 +256,24 @@ const SignupFormComponent = props => {
               setCurrentTab('initial');
           }
         };
-
+        const checkUser = async () => {
+          setCheckingUser(true);
+          try {
+            const email = values.email;
+            const response = await checkUserAlreadyExist({ email });
+            // Check the response structure
+            if (response && response.exists) {
+              setSignupError('User with this email already exists');
+            } else {
+              setCurrentTab('tab1');
+            }
+          } catch (error) {
+            console.error('Error checking user:', error);
+            setSignupError('Failed to verify email. Please try again.');
+          } finally {
+            setCheckingUser(false);
+          }
+        };
         // Switch case function to handle tab display
         const renderTabContent = () => {
           switch (currentTab) {
@@ -262,13 +374,23 @@ const SignupFormComponent = props => {
 
               {termsAndConditions}
 
+              {signupError && (
+                <div className={css.error}>
+                  {signupError}
+                </div>
+              )}
+
               <Button
                 type="button"
                 className={css.nextButton}
-                onClick={() => setCurrentTab('tab1')}
-                disabled={invalid || !userType}
+                onClick={checkUser}
+                disabled={invalid || !userType || checkingUser}
               >
-                <FormattedMessage id="SignupForm.next" />
+                {checkingUser ? (
+                  <FormattedMessage id="SignupForm.checking" defaultMessage="Checking..." />
+                ) : (
+                  <FormattedMessage id="SignupForm.next" />
+                )}
               </Button>
 
             </div>
@@ -277,13 +399,13 @@ const SignupFormComponent = props => {
 
         const renderRoleFieldsTab = () => (
           <div className={css.roleFieldsContainer}>
-            {signupError && <Button
+            <Button
               type="button"
               className={css.backButton}
               onClick={handleGoBack}
             >
               <FormattedMessage id="SignupForm.back" />
-            </Button>}
+            </Button>
 
             <div className={css.tabContent}>
               {userType && (
@@ -463,13 +585,13 @@ const SignupFormComponent = props => {
 
         const renderCompanyDetailsTab = () => (
           <div className={css.roleSpecificFields}>
-            {signupError && <Button
+            <Button
               type="button"
               className={css.backButton}
               onClick={handleGoBack}
             >
               <FormattedMessage id="SignupForm.back" />
-            </Button>}
+            </Button>
             {userType === INSTALLER && (
               <div className={css.roleSpecificFields}>
 
@@ -651,7 +773,7 @@ const SignupFormComponent = props => {
         );
 
         return (
-          <Form className={classes} onSubmit={handleSubmit}>
+          <Form className={classes} onSubmit={enhancedHandleSubmit}>
             {renderTabContent()}
           </Form>
         );

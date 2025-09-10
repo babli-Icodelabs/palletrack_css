@@ -16,7 +16,7 @@
 }
 
 .numberButton {
-  stroke-width: 1px;
+  strokeWidth: 1px;
   border-radius: 10%;
   fill: var(--colorSecondaryButton);
   height: 40px;
@@ -75,7 +75,7 @@
   /* stroke color set to match the color of the input 
   borders defined in marketplaceDefaults.css  */
   stroke: #d8dce6;
-  stroke-width: 1px;
+  strokeWidth: 1px;
 }
 
 .icon {

@@ -107,5 +107,5 @@
   width: 24px;
   height: 24px;
   stroke: var(--colorSuccess);
-  stroke-width: 3px;
+  strokeWidth: 3px;
 }
