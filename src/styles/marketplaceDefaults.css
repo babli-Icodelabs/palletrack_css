@@ -438,7 +438,8 @@ label {
   display: block;
   margin-top: 0;
   margin-bottom: 6px;
-
+  font-family: Inter;
+  
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
     line-height: 16px;
@@ -555,6 +556,8 @@ textarea {
 
   &::placeholder {
     color: var(--colorGrey300);
+    font-weight: 500;
+    font-size: 14px;
   }
 
   @media (--viewportMedium) {
