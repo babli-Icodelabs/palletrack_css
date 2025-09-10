@@ -19,11 +19,13 @@ import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/E
 import EditListingStylePanel from './EditListingStylePanel/EditListingStylePanel';
 
 import css from './EditListingWizardTab.module.css';
+import EditListingMaterialDescriptionPanel from './EditListingMaterialDescription/EditListingMaterialDescriptionPanel';
 
 export const DETAILS = 'details';
 export const PRICING = 'pricing';
 export const PRICING_AND_STOCK = 'pricing-and-stock';
 export const DELIVERY = 'delivery';
+export const MATERIALDESCRIPTION = 'materialdescription';
 export const LOCATION = 'location';
 export const AVAILABILITY = 'availability';
 export const PHOTOS = 'photos';
@@ -35,6 +37,7 @@ export const SUPPORTED_TABS = [
   PRICING,
   PRICING_AND_STOCK,
   DELIVERY,
+  MATERIALDESCRIPTION,
   LOCATION,
   AVAILABILITY,
   PHOTOS,
@@ -195,6 +198,15 @@ const EditListingWizardTab = props => {
         />
       );
     }
+    case MATERIALDESCRIPTION: {
+      return (
+        <EditListingMaterialDescriptionPanel
+        {...panelProps(MATERIALDESCRIPTION)}
+        onListingTypeChange={onListingTypeChange}
+        config={config}
+        />
+      );
+    }
     case PRICING_AND_STOCK: {
       return (
         <EditListingPricingAndStockPanel
@@ -204,6 +216,7 @@ const EditListingWizardTab = props => {
         />
       );
     }
+
     case PRICING: {
       return (
         <EditListingPricingPanel
