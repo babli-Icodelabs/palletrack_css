@@ -48,8 +48,165 @@
 .uploadButton:hover {
   border-color: #9CA3AF;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  color: #111827;
 }
+
+/* Password field styles */
+.passwordContainer {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.passwordToggle:hover {
+  color: #374151;
+}
+
+.passwordToggle:focus {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.password {
+  padding-right: 40px !important;
+}
+
+/* Password strength meter */
+.passwordStrengthContainer {
+  margin-top: 8px;
+}
+
+.passwordStrengthLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 4px;
+}
+
+.strengthText {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.strengthText.weak {
+  color: #EF4444;
+}
+
+.strengthText.medium {
+  color: #F59E0B;
+}
+
+.strengthText.strong {
+  color: #10B981;
+}
+
+.passwordStrengthBar {
+  width: 100%;
+  height: 4px;
+  background-color: #E5E7EB;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strengthFill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+.strengthFill.weak {
+  background-color: #EF4444;
+}
+
+.strengthFill.medium {
+  background-color: #F59E0B;
+}
+
+.strengthFill.strong {
+  background-color: #10B981;
+}
+
+/* Password warning */
+.passwordWarning {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #FEF3C7;
+  border: 1px solid #F59E0B;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #92400E;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+/* Field wrapper and input styles */
+.fieldWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.fieldInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #111827;
+  background-color: #FFFFFF;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.fieldInput::placeholder {
+  color: #9CA3AF;
+}
+
+.fieldError {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #EF4444;
+  line-height: 1.4;
+}
+
 
 .uploadButton:active {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);

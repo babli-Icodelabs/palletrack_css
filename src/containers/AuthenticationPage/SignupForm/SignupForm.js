@@ -35,6 +35,9 @@ const SignupFormComponent = props => {
   const [savedFormData, setSavedFormData] = useState({});
   const [signupError, setSignupError] = useState(null);
   const [checkingUser, setCheckingUser] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [passwordWarning, setPasswordWarning] = useState('');
   const onProgressChange = props.onProgressChange;
 
   // Local storage utility functions
@@ -79,6 +82,70 @@ const SignupFormComponent = props => {
       localStorage.removeItem(SIGNUP_FORM_STORAGE_KEY);
     } catch (error) {
       console.warn('Failed to clear form data from localStorage:', error);
+    }
+  }, []);
+
+  // Password validation and strength calculation
+  const calculatePasswordStrength = useCallback((password) => {
+    if (!password) return '';
+    
+    let score = 0;
+    const checks = {
+      length: password.length >= 8,
+      hasLetter: /[a-zA-Z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password)
+    };
+    
+    // Base requirements
+    if (checks.length) score += 2;
+    if (checks.hasLetter) score += 2;
+    if (checks.hasNumber) score += 2;
+    
+    // Bonus points
+    if (checks.hasSpecial) score += 1;
+    if (checks.hasUppercase && checks.hasLowercase) score += 1;
+    if (password.length >= 12) score += 1;
+    
+    if (score < 4) return 'weak';
+    if (score < 7) return 'medium';
+    return 'strong';
+  }, []);
+
+  // Enhanced password validator
+  const passwordValidator = useCallback((value) => {
+    if (!value) {
+      return 'Password is required';
+    }
+    
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    
+    if (!/[a-zA-Z]/.test(value)) {
+      return 'Password must contain at least one letter';
+    }
+    
+    if (!/\d/.test(value)) {
+      return 'Password must contain at least one number';
+    }
+    
+    return undefined;
+  }, []);
+
+  // Check for common/breached passwords (simplified)
+  const checkPasswordReuse = useCallback((password) => {
+    const commonPasswords = [
+      'password', '123456', '123456789', 'qwerty', 'abc123',
+      'password123', 'admin', 'letmein', 'welcome', 'monkey'
+    ];
+    
+    if (commonPasswords.includes(password.toLowerCase())) {
+      setPasswordWarning('This password is commonly used and may be compromised. Consider using a stronger password.');
+    } else {
+      setPasswordWarning('');
     }
   }, []);
 
@@ -189,40 +256,12 @@ const SignupFormComponent = props => {
           })
         );
 
-        // password
-        const passwordRequiredMessage = intl.formatMessage({
-          id: 'SignupForm.passwordRequired',
-        });
-        const passwordMinLengthMessage = intl.formatMessage(
-          {
-            id: 'SignupForm.passwordTooShort',
-          },
-          {
-            minLength: validators.PASSWORD_MIN_LENGTH,
-          }
-        );
-        const passwordMaxLengthMessage = intl.formatMessage(
-          {
-            id: 'SignupForm.passwordTooLong',
-          },
-          {
-            maxLength: validators.PASSWORD_MAX_LENGTH,
-          }
-        );
-        const passwordMinLength = validators.minLength(
-          passwordMinLengthMessage,
-          validators.PASSWORD_MIN_LENGTH
-        );
-        const passwordMaxLength = validators.maxLength(
-          passwordMaxLengthMessage,
-          validators.PASSWORD_MAX_LENGTH
-        );
-        const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
-        const passwordValidators = validators.composeValidators(
-          passwordRequired,
-          passwordMinLength,
-          passwordMaxLength
-        );
+        // Enhanced password validation
+        const handlePasswordChange = (value) => {
+          const strength = calculatePasswordStrength(value);
+          setPasswordStrength(strength);
+          checkPasswordReuse(value);
+        };
 
         // Custom user fields
         const userFieldProps = getPropsForCustomUserFieldInputs(userFields, intl, userType);
@@ -349,20 +388,93 @@ const SignupFormComponent = props => {
                 />
               </div>
 
-              <FieldTextInput
-                className={css.password}
-                type="password"
-                id={formId ? `${formId}.password` : 'password'}
+              <Field
                 name="password"
-                autoComplete="new-password"
-                label={intl.formatMessage({
-                  id: 'SignupForm.passwordLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.passwordPlaceholder',
-                })}
-                validate={passwordValidators}
-              />
+                validate={passwordValidator}
+              >
+                {({ input, meta }) => {
+                  const handleChange = (e) => {
+                    const value = e.target.value;
+                    input.onChange(e); // Update form state
+                    handlePasswordChange(value); // Update strength meter
+                  };
+
+                  return (
+                    <div className={css.passwordContainer}>
+                      <div className={css.passwordInputWrapper}>
+                        <div className={css.fieldWrapper}>
+                          <label 
+                            htmlFor={formId ? `${formId}.password` : 'password'}
+                            className={css.fieldLabel}
+                          >
+                            {intl.formatMessage({
+                              id: 'SignupForm.passwordLabel',
+                            })}
+                          </label>
+                          <input
+                            {...input}
+                            type={showPassword ? "text" : "password"}
+                            id={formId ? `${formId}.password` : 'password'}
+                            className={`${css.fieldInput} ${css.password}`}
+                            autoComplete="new-password"
+                            placeholder={intl.formatMessage({
+                              id: 'SignupForm.passwordPlaceholder',
+                            })}
+                            onChange={handleChange}
+                          />
+                          <button
+                            type="button"
+                            className={css.passwordToggle}
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                          >
+                            {showPassword ? (
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+                              </svg>
+                            ) : (
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" fill="currentColor"/>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        {meta.error && meta.touched && (
+                          <div className={css.fieldError}>
+                            {meta.error}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {input.value && (
+                        <div className={css.passwordStrengthContainer}>
+                          <div className={css.passwordStrengthLabel}>
+                            Password strength: 
+                            <span className={`${css.strengthText} ${css[passwordStrength]}`}>
+                              {passwordStrength.charAt(0).toUpperCase() + passwordStrength.slice(1)}
+                            </span>
+                          </div>
+                          <div className={css.passwordStrengthBar}>
+                            <div 
+                              className={`${css.strengthFill} ${css[passwordStrength]}`}
+                              style={{
+                                width: passwordStrength === 'weak' ? '33%' : 
+                                      passwordStrength === 'medium' ? '66%' : '100%'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {passwordWarning && (
+                        <div className={css.passwordWarning}>
+                          ⚠️ {passwordWarning}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }}
+              </Field>
             </div>
             <div className={css.userTypeContainer}>
               <FieldSelectUserType
