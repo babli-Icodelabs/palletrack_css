@@ -125,7 +125,7 @@ const NotLoggedInMenu = ({ currentPage, currentUser, onLogout, showManageListing
     <Menu className={css.notLoggedInProfile}>
       <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
         <svg width="41" height="25" viewBox="0 0 41 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2.38379 22.465H38.3838M2.38379 12.465H38.3838M2.38379 2.46497H38.3838" stroke="#232322" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M2.38379 22.465H38.3838M2.38379 12.465H38.3838M2.38379 2.46497H38.3838" stroke="#232322" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
 
       </MenuLabel>

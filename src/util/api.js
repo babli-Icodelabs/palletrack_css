@@ -144,3 +144,7 @@ export const transitionPrivileged = body => {
 export const createUserWithIdp = body => {
   return post('/api/auth/create-user-with-idp', body);
 };
+
+export const checkUserAlreadyExist = body => {
+  return post('/api/check-user-already-exist', body);
+};

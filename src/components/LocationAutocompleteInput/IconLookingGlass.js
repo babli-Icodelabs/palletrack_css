@@ -3,27 +3,10 @@ import React from 'react';
 import css from './LocationAutocompleteInput.module.css';
 
 const IconLookingGlass = () => (
-  <svg
-    className={css.iconSvg}
-    width="21"
-    height="22"
-    viewBox="0 0 21 22"
-    xmlns="http://www.w3.org/2000/svg"
-    role="img"
-  >
-    <g
-      className={css.iconSvgGroup}
-      transform="matrix(-1 0 0 1 20 1)"
-      strokeWidth="2"
-      fill="none"
-      fillRule="evenodd"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M13 14l5.241 5.241" />
-      <circle cx="7.5" cy="7.5" r="7.5" />
-    </g>
+  <svg className={css.iconSvg} width="14" height="21" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 10.375C6.33696 10.375 5.70107 10.1116 5.23223 9.64277C4.76339 9.17393 4.5 8.53804 4.5 7.875C4.5 7.21196 4.76339 6.57607 5.23223 6.10723C5.70107 5.63839 6.33696 5.375 7 5.375C7.66304 5.375 8.29893 5.63839 8.76777 6.10723C9.23661 6.57607 9.5 7.21196 9.5 7.875C9.5 8.2033 9.43534 8.52839 9.3097 8.83171C9.18406 9.13502 8.99991 9.41062 8.76777 9.64277C8.53562 9.87491 8.26002 10.0591 7.95671 10.1847C7.65339 10.3103 7.3283 10.375 7 10.375ZM7 0.875C5.14348 0.875 3.36301 1.6125 2.05025 2.92525C0.737498 4.23801 0 6.01848 0 7.875C0 13.125 7 20.875 7 20.875C7 20.875 14 13.125 14 7.875C14 6.01848 13.2625 4.23801 11.9497 2.92525C10.637 1.6125 8.85652 0.875 7 0.875Z" fill="black" />
   </svg>
+
 );
 
 export default IconLookingGlass;

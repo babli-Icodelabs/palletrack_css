@@ -6,5 +6,5 @@
   height: 28px;
 
   stroke: var(--marketplaceColor);
-  stroke-width: 3px;
+  strokeWidth: 3px;
 }
