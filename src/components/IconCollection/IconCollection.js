@@ -14,6 +14,10 @@ export const IconCollection = props => {
 				</svg>
 
 			);
+		case "Info-Icon":
+			return (
+				<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" enableBackground="new 0 0 32 32"  width="24" height="24"><path x="15" y="14" width="2" height="8" d="M11.25 10.5h1.5v6h-1.5z" /><path x="15" y="10" width="2" height="2" d="M11.25 7.5h1.5v1.5h-1.5z" /><path fill="none" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" cx="16" cy="16" r="12" d="M21 12a9 9 0 0 1 -9 9A9 9 0 0 1 3 12a9 9 0 0 1 18 0z" /></svg>
+			)
 		default:
 			return null;
 	}

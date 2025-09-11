@@ -54,11 +54,12 @@
 .passwordContainer {
   position: relative;
   width: 100%;
+  margin-top: 24px;
 }
 
 .passwordInputWrapper {
   position: relative;
-  display: flex;
+  /* display: flex; */
   align-items: center;
 }
 
@@ -168,26 +169,27 @@
 .fieldWrapper {
   position: relative;
   width: 100%;
+
 }
 
 .fieldLabel {
-  display: block;
+  /* display: block;
   font-size: 14px;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 6px;
+  margin-bottom: 6px; */
 }
 
 .fieldInput {
   width: 100%;
-  padding: 12px 16px;
+  /* padding: 12px 16px;
   border: 1px solid #D1D5DB;
   border-radius: 6px;
   font-size: 16px;
   line-height: 1.5;
   color: #111827;
   background-color: #FFFFFF;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; */
 }
 
 .fieldInput:focus {
@@ -201,10 +203,33 @@
 }
 
 .fieldError {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #EF4444;
-  line-height: 1.4;
+  composes: h4 from global;
+  margin-top: 6px;
+  margin-bottom: 0;
+  color: var(--colorFail);
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+  @media (--viewportMedium) {
+    margin-top: 8px;
+  }
+}
+
+.error{
+  composes: h4 from global;
+  margin-top: 6px;
+  margin-bottom: 0;
+  color: var(--colorFail);
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+ 
+  @media (--viewportMedium) {
+    margin-top: 8px;
+  }
+  & path {
+    stroke:var(--colorFail);
+  }
 }
 
 
@@ -308,6 +333,7 @@
 
 .password {
   composes: marketplaceModalPasswordMargins from global;
+  margin-top: 0;
 }
 
 .userTypeContainer {

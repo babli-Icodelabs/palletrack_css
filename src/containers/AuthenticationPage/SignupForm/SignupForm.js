@@ -402,7 +402,6 @@ const SignupFormComponent = props => {
                   return (
                     <div className={css.passwordContainer}>
                       <div className={css.passwordInputWrapper}>
-                        <div className={css.fieldWrapper}>
                           <label 
                             htmlFor={formId ? `${formId}.password` : 'password'}
                             className={css.fieldLabel}
@@ -411,6 +410,7 @@ const SignupFormComponent = props => {
                               id: 'SignupForm.passwordLabel',
                             })}
                           </label>
+                        <div className={css.fieldWrapper}>
                           <input
                             {...input}
                             type={showPassword ? "text" : "password"}
@@ -488,7 +488,7 @@ const SignupFormComponent = props => {
 
               {signupError && (
                 <div className={css.error}>
-                  {signupError}
+                  <IconCollection iconName="Info-Icon" /> {signupError}
                 </div>
               )}
 
