@@ -217,6 +217,7 @@ export const signup = params => (dispatch, getState, sdk) => {
     .create(params)
     .then(() => dispatch(signupSuccess()))
     .then(() => dispatch(login(params.email, params.password)))
+    .then(resp => resp)
     .catch(e => {
       dispatch(signupError(storableError(e)));
       log.error(e, 'signup-failed', {

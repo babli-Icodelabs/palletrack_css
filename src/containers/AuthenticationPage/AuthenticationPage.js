@@ -53,7 +53,7 @@ import { PrivacyPolicyContent } from '../../containers/PrivacyPolicyPage/Privacy
 
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
 
-import { TOS_ASSET_NAME, PRIVACY_POLICY_ASSET_NAME } from './AuthenticationPage.duck';
+import { TOS_ASSET_NAME, PRIVACY_POLICY_ASSET_NAME, uploadImage, clearImage, saveImage, uploadProfileImage } from './AuthenticationPage.duck';
 
 import css from './AuthenticationPage.module.css';
 import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
@@ -146,9 +146,9 @@ const getNonUserFieldParams = (values, userFieldConfigs) => {
     return isUserFieldKey
       ? picked
       : {
-          ...picked,
-          [key]: value,
-        };
+        ...picked,
+        [key]: value,
+      };
   }, {});
 };
 
@@ -167,7 +167,17 @@ export const AuthenticationForms = props => {
     authInProgress,
     submitSignup,
     termsAndConditions,
+    image,
+    uploadImageError,
+    uploadInProgress,
+    updateInProgress,
+    updateProfileError,
+    onImageUpload,
+    onRemoveImage,
+    previewUrl,
+    uploadProfileImage
   } = props;
+  const [progressPercent, setProgressPercent] = useState(30);
   const config = useConfiguration();
   const intl = useIntl();
   const { userFields, userTypes = [] } = config.user;
@@ -206,7 +216,15 @@ export const AuthenticationForms = props => {
   ];
 
   const handleSubmitSignup = values => {
-    const { userType, email, password, fname, lname, displayName, ...rest } = values;
+    const { userType, email, password, fname, lname, displayName, companyName, headquarterAddress, yardLocations,
+      UrgencyLevel, companyWebsite, canwehelp,serviceRegions,crewSize, ...rest } = values;
+    const {
+      selectedPlace: { address, origin },
+    } = headquarterAddress;
+
+    // const {
+    //   selectedPlace: { yardAddress:address , origin: yardOrgin },
+    // } = yardLocations
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
     const params = {
@@ -217,6 +235,14 @@ export const AuthenticationForms = props => {
       ...displayNameMaybe,
       publicData: {
         userType,
+        crewSize,
+        companyName,
+        companyWebsite,
+        UrgencyLevel,
+        canwehelp,
+        serviceRegions,
+        // yardLocations: { address: yardAddress, geolocation: yardOrgin },
+        headquarterAddress: { address, geolocation: origin },
         ...pickUserFieldsData(rest, 'public', userType, userFields),
       },
       privateData: {
@@ -228,7 +254,11 @@ export const AuthenticationForms = props => {
       },
     };
 
-    submitSignup(params);
+    submitSignup(params)
+      .then(() => {
+        uploadProfileImage(image)
+      })
+      .catch((error) => { console.log("Error uploading Image: ", error) })
   };
 
   const loginErrorMessage = (
@@ -257,10 +287,10 @@ export const AuthenticationForms = props => {
     isLogin && !!idpAuthError
       ? idpAuthErrorMessage
       : isLogin && !!loginError
-      ? loginErrorMessage
-      : !!signupError
-      ? signupErrorMessage
-      : null;
+        ? loginErrorMessage
+        : !!signupError
+          ? signupErrorMessage
+          : null;
 
   const ariaLabel = `${intl.formatMessage({
     id: 'AuthenticationPage.signupLinkText',
@@ -268,8 +298,8 @@ export const AuthenticationForms = props => {
 
   return (
     <div className={css.content}>
-    {!isLogin && <div className={css.progressWrapper}>
-      <div className={css.progress} style={{width:"30%"}}/>
+      {!isLogin && <div className={css.progressWrapper}>
+        <div className={css.progress} style={{ width: `${progressPercent}%` }} />
       </div>}
       <LinkTabNavHorizontal className={css.tabs} tabs={tabs} ariaLabel={ariaLabel} />
       {loginOrSignupError}
@@ -285,6 +315,16 @@ export const AuthenticationForms = props => {
           preselectedUserType={preselectedUserType}
           userTypes={userTypes}
           userFields={userFields}
+          image={image}
+          signupError={signupError}
+          uploadImageError={uploadImageError}
+          uploadInProgress={uploadInProgress}
+          updateInProgress={updateInProgress}
+          updateProfileError={updateProfileError}
+          onImageUpload={onImageUpload}
+          onRemoveImage={onRemoveImage}
+          previewUrl={previewUrl}
+          onProgressChange={setProgressPercent}
         />
       )}
 
@@ -342,19 +382,19 @@ const ConfirmIdProviderInfoForm = props => {
     // Pass other values as extended data according to user field configuration
     const extendedDataMaybe = !isEmpty(rest)
       ? {
-          publicData: {
-            userType,
-            ...pickUserFieldsData(rest, 'public', userType, userFields),
-          },
-          privateData: {
-            ...pickUserFieldsData(rest, 'private', userType, userFields),
-          },
-          protectedData: {
-            ...pickUserFieldsData(rest, 'protected', userType, userFields),
-            // If the confirm form has any additional values, pass them forward as user's protected data
-            ...getNonUserFieldParams(rest, userFields),
-          },
-        }
+        publicData: {
+          userType,
+          ...pickUserFieldsData(rest, 'public', userType, userFields),
+        },
+        privateData: {
+          ...pickUserFieldsData(rest, 'private', userType, userFields),
+        },
+        protectedData: {
+          ...pickUserFieldsData(rest, 'protected', userType, userFields),
+          // If the confirm form has any additional values, pass them forward as user's protected data
+          ...getNonUserFieldParams(rest, userFields),
+        },
+      }
       : {};
 
     submitSingupWithIdp({
@@ -418,6 +458,15 @@ export const AuthenticationOrConfirmInfoForm = props => {
     signupError,
     confirmError,
     termsAndConditions,
+    image,
+    uploadImageError,
+    uploadInProgress,
+    updateInProgress,
+    updateProfileError,
+    onImageUpload,
+    onRemoveImage,
+    previewUrl,
+    uploadProfileImage
   } = props;
   const isConfirm = tab === 'confirm';
   const isLogin = tab === 'login';
@@ -445,6 +494,15 @@ export const AuthenticationOrConfirmInfoForm = props => {
       authInProgress={authInProgress}
       submitSignup={submitSignup}
       termsAndConditions={termsAndConditions}
+      image={image}
+      uploadImageError={uploadImageError}
+      uploadInProgress={uploadInProgress}
+      updateInProgress={updateInProgress}
+      updateProfileError={updateProfileError}
+      onImageUpload={onImageUpload}
+      onRemoveImage={onRemoveImage}
+      previewUrl={previewUrl}
+      uploadProfileImage={uploadProfileImage}
     ></AuthenticationForms>
   );
 };
@@ -560,6 +618,15 @@ export const AuthenticationPageComponent = props => {
     tosAssetsData,
     tosFetchInProgress,
     tosFetchError,
+    image,
+    uploadImageError,
+    uploadInProgress,
+    updateInProgress,
+    updateProfileError,
+    onImageUpload,
+    onRemoveImage,
+    previewUrl,
+    uploadProfileImage
   } = props;
 
   // History API has potentially state tied to this route
@@ -650,7 +717,7 @@ export const AuthenticationPageComponent = props => {
     >
       <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer className={classNames(topbarClasses,css.authTopbar)} />}
+        topbar={<TopbarContainer className={classNames(topbarClasses, css.authTopbar)} />}
         footer={<FooterContainer />}
       >
         <ResponsiveBackgroundImageContainer
@@ -692,6 +759,15 @@ export const AuthenticationPageComponent = props => {
                   intl={intl}
                 />
               }
+              image={image}
+              uploadImageError={uploadImageError}
+              uploadInProgress={uploadInProgress}
+              updateInProgress={updateInProgress}
+              updateProfileError={updateProfileError}
+              onImageUpload={onImageUpload}
+              onRemoveImage={onRemoveImage}
+              previewUrl={previewUrl}
+              uploadProfileImage={uploadProfileImage}
             />
           )}
         </ResponsiveBackgroundImageContainer>
@@ -740,6 +816,14 @@ const mapStateToProps = state => {
   } = state.hostedAssets || {};
   const { pageAssetsData: tosAssetsData, inProgress: tosFetchInProgress, error: tosFetchError } =
     state.hostedAssets || {};
+  const {
+    image,
+    uploadImageError,
+    uploadInProgress,
+    updateInProgress,
+    updateProfileError,
+    previewUrl
+  } = state.AuthenticationPage;
 
   return {
     authInProgress: authenticationInProgress(state),
@@ -757,6 +841,12 @@ const mapStateToProps = state => {
     tosAssetsData,
     tosFetchInProgress,
     tosFetchError,
+    image,
+    uploadImageError,
+    uploadInProgress,
+    updateInProgress,
+    updateProfileError,
+    previewUrl
   };
 };
 
@@ -767,6 +857,9 @@ const mapDispatchToProps = dispatch => ({
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onImageUpload: data => dispatch(saveImage(data)),
+  onRemoveImage: () => dispatch(clearImage()),
+  uploadProfileImage: data => dispatch(uploadProfileImage(data))
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

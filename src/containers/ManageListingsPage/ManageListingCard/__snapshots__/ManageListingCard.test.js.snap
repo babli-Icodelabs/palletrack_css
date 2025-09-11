@@ -37,22 +37,22 @@ exports[`ManageListingCard matches snapshot (purchase) 1`] = `
                 >
                   <path
                     d="M13.6 9.6L24 .8l10.4 8.8z"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                   />
                   <path
                     d="M.8 46.4h46.4V9.6H.8z"
-                    stroke-width="2"
+                    strokeWidth="2"
                   />
                   <path
                     d="M5.6 41.6h36.8V14.4H5.6z"
-                    stroke-width="2"
+                    strokeWidth="2"
                   />
                   <path
                     d="M19.998 31.636l.835-.835a4.035 4.035 0 0 1 2.853-1.183h.693c1.07 0 2.097.426 2.853 1.183l.835.835"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                   />
                   <path
                     d="M21.599 23.983a1.009 1.009 0 1 0 0 2.018 1.009 1.009 0 0 0 0-2.018M26.402 23.983a1.009 1.009 0 1 0 0 2.018 1.009 1.009 0 0 0 0-2.018"

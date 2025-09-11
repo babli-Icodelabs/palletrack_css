@@ -263,6 +263,10 @@
 
 .error {
   composes: marketplaceModalPasswordMargins from global;
+  @media (--viewportMedium) {
+    padding: 0 40px;
+  }
+ 
 }
 
 /* ================ Social logins & SSO ================ */

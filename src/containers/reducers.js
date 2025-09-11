@@ -19,6 +19,7 @@ import SearchPage from './SearchPage/SearchPage.duck';
 import StripePayoutPage from './StripePayoutPage/StripePayoutPage.duck';
 import TransactionPage from './TransactionPage/TransactionPage.duck';
 import FeaturedListings from '../components/FeaturedListings/FeaturedListing.duck';
+import AuthenticationPage from './AuthenticationPage/AuthenticationPage.duck'; 
 
 export {
   CheckoutPage,
@@ -37,4 +38,5 @@ export {
   StripePayoutPage,
   TransactionPage,
   FeaturedListings,
+  AuthenticationPage,
 };
