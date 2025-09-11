@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 import cardImage1 from '../../assets/cardImage1.png';
 import cardImage2 from '../../assets/cardImage2.png';
@@ -22,9 +23,8 @@ const FeaturedListings = (props) => {
     onToggleFavorite,
     loading
   } = props;
-
+  const history = useHistory()
   const trackRef = React.useRef(null);
-
   const favoriteIds = currentUser?.attributes?.profile?.publicData?.favorites || [];
 
   const items = [
@@ -104,7 +104,11 @@ const FeaturedListings = (props) => {
   };
 
   const handleFavoriteClick = (listingId, isFav) => {
-    onToggleFavorite(listingId, isFav);
+    if (currentUser) {
+      onToggleFavorite(listingId, isFav);
+    } else {
+      history.push('/signup')
+    }
   };
 
   return (

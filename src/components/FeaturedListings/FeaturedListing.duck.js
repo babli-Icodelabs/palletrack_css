@@ -90,7 +90,6 @@ export const fetchFeaturedListings = config => (dispatch, getState, sdk) => {
             'limit.images': 1,
         })
         .then(response => {
-            console.log('response', response)
             dispatch(addMarketplaceEntities(response));
             dispatch(fetchFeaturedSuccess(response));
             return response;
